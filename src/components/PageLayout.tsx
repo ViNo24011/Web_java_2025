@@ -17,7 +17,7 @@ const PageLayout = ({
   props?: any;
   children: React.ReactNode;
 }) => {
-  const pathname = usePathname();
+  const pathname = usePathname().replace("/", "");
 
   return (
     <div className="bg-white w-full max-w-7xl flex flex-col">
@@ -32,11 +32,15 @@ const PageLayout = ({
                 </span>
               </BreadcrumbLink>
             </BreadcrumbItem>
-            {pathname !== "/" && (
-              <BreadcrumbItem>
+            {pathname !== "" && (
+              <>
                 <BreadcrumbSeparator />
-                <BreadcrumbPage>{pathname}</BreadcrumbPage>
-              </BreadcrumbItem>
+                <BreadcrumbItem>
+                  <BreadcrumbPage className="text-gray-500">
+                    {pathname.charAt(0).toUpperCase() + pathname.slice(1)}
+                  </BreadcrumbPage>
+                </BreadcrumbItem>
+              </>
             )}
           </BreadcrumbList>
         </Breadcrumb>

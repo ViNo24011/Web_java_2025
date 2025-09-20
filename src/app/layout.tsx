@@ -5,6 +5,7 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 import Navbar from "@/components/Navbar";
 import Image from "next/image";
 import Footer from "@/components/Footer";
+import { AxiosInterceptor } from "@/lib/api/config";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,8 +31,9 @@ export default function RootLayout({
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased `}
+        suppressHydrationWarning
       >
-        <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
+        <AxiosInterceptor>
           <div className="relative min-h-screen">
             {/* background image */}
             <div className="fixed inset-0 -z-10">
@@ -49,7 +51,7 @@ export default function RootLayout({
             </div>
           </div>
           <Footer />
-        </ThemeProvider>
+        </AxiosInterceptor>
       </body>
     </html>
   );
