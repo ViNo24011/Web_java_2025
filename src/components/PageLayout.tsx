@@ -21,7 +21,7 @@ const PageLayout = ({
 
   return (
     <div className="bg-white w-full max-w-7xl flex flex-col">
-      <div className="flex items-center gap-2 mb-4 bg-gray-200 h-8 px-2 flex-shrink-0">
+      <div className="flex items-center gap-2 mb-2 bg-gray-200 h-8 px-2 flex-shrink-0">
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem>

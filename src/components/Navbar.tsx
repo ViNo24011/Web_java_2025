@@ -9,12 +9,15 @@ import { useState } from "react";
 const Navbar = () => {
   const [active, setActive] = useState<string>("/");
   const path = usePathname();
-  console.log(path);
 
   const pathLabel = [
     {
       path: "/",
       label: "Trang chủ",
+    },
+    {
+      path: "/search",
+      label: "Tìm kiếm",
     },
     {
       path: "/about",
@@ -52,16 +55,21 @@ const Navbar = () => {
             <Link
               key={item.path}
               className={`flex items-center justify-center text-black px-2 ${
-                active === item.path ? "font-bold" : ""
+                path === item.path ? "font-bold" : ""
               }`}
               href={item.path}
-              onClick={() => setActive(item.path)}
+              // onClick={() => setActive(item.path)}
             >
-              <span className={`${active === item.path ? "font-bold" : ""}`}>
+              <span className={`${path === item.path ? "font-bold" : ""}`}>
                 {item.label}
               </span>
             </Link>
           ))}
+        </div>
+        <div className="flex flex-1 justify-center items-center">
+          <Button className="hover:bg-white hover:border hover:border-black hover:text-black">
+            <Link href="/login">Đăng nhập</Link>
+          </Button>
         </div>
       </div>
     </nav>

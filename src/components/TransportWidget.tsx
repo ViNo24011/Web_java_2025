@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Button, Card, Col, DatePicker, Form, Radio, Row, Select } from "antd";
 import {
   CalendarFilled,
@@ -9,29 +9,40 @@ import {
 } from "@ant-design/icons";
 import dayjs from "dayjs";
 import { LOCATIONS } from "@/lib/constants";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import useWidgetStore from "@/store/useWidgetStore";
+import useBookingStore from "@/store/useBookingStore";
 
 const { Option } = Select;
 const { RangePicker } = DatePicker;
 
-const TransportWidget = ({
-  onSearch,
-}: {
+interface TransportWidgetProps {
   onSearch?: (values: any) => void;
+  className?: string;
+}
+
+const TransportWidget: React.FC<TransportWidgetProps> = ({
+  onSearch,
+  className,
 }) => {
-  const [tripType, setTripType] = useState("oneWay");
   const [form] = Form.useForm();
   const router = useRouter();
+  const { data } = useWidgetStore();
+  const [ticketType, setTicketType] = useState<string>("oneWay");
+  const setBookingData = useBookingStore((state) => state.setData);
+  const bookingData = useBookingStore((state) => state.data);
+
+  const searchParams = useSearchParams();
 
   const onFinish = (values: any) => {
     if (typeof onSearch === "function") {
       onSearch(values);
     } else {
       let dateParam = "";
-      if (tripType === "oneWay" && values.date) {
+      if (values.ticket_type === "oneWay" && values.date) {
         dateParam = dayjs(values.date).format("YYYY-MM-DD");
       } else if (
-        tripType === "return" &&
+        values.ticket_type === "return" &&
         values.date &&
         values.date.length === 2
       ) {
@@ -39,6 +50,12 @@ const TransportWidget = ({
           values.date[1]
         ).format("YYYY-MM-DD")}`;
       }
+
+      setBookingData({
+        ticket_type: values.ticket_type,
+        start_location: values.start_location,
+        end_location: values.end_location,
+      });
 
       const searchParams = new URLSearchParams({
         start_location: values.start_location || "",
@@ -59,24 +76,53 @@ const TransportWidget = ({
       end_location: startLocation,
     });
   };
+
+  const initialFormValues = useMemo(() => {
+    // Lấy dữ liệu từ URL params
+    const startLocation = searchParams.get("start_location");
+    const endLocation = searchParams.get("end_location");
+    const dateParam = searchParams.get("date");
+
+    // Parse date parameter
+    let parsedDate = undefined;
+    if (dateParam) {
+      if (dateParam.includes(",")) {
+        // Return trip - có 2 ngày
+        const dates = dateParam.split(",");
+        parsedDate = [dayjs(dates[0]), dayjs(dates[1])];
+      } else {
+        // One way trip - có 1 ngày
+        parsedDate = dayjs(dateParam);
+      }
+    }
+
+    return {
+      ticket_type: ticketType || "oneWay",
+      start_location: startLocation || undefined,
+      end_location: endLocation || undefined,
+      date: parsedDate,
+    };
+  }, [ticketType, searchParams]);
+
   return (
-    <Card className="shadow-xl" styles={{ body: { padding: "16px" } }}>
+    <Card
+      className={`shadow-xl ${className}`}
+      styles={{ body: { padding: "16px" } }}
+    >
       <Form
         form={form}
         onFinish={onFinish}
         layout="vertical"
-        initialValues={{
-          tripType: tripType,
-        }}
+        initialValues={initialFormValues}
       >
-        <Form.Item name="tripType">
-          <Radio.Group onChange={(e) => setTripType(e.target.value)}>
+        <Form.Item name="ticket_type">
+          <Radio.Group onChange={(e) => setTicketType(e.target.value)}>
             <Radio value="oneWay">Một chiều</Radio>
             <Radio value="return">Khứ hồi</Radio>
           </Radio.Group>
         </Form.Item>
         <Row gutter={16}>
-          <Col span={tripType === "oneWay" ? 7 : 6}>
+          <Col span={ticketType === "oneWay" ? 7 : 6}>
             <div className="flex flex-col gap-1 p-2 bg-gray-200 border rounded-sm p-1 border-transparent focus-within:border-blue-500 min-h-[80px]">
               <div>
                 <EnvironmentFilled />{" "}
@@ -120,7 +166,7 @@ const TransportWidget = ({
             />
           </Col>
 
-          <Col span={tripType === "oneWay" ? 7 : 6}>
+          <Col span={ticketType === "oneWay" ? 7 : 6}>
             <div className="flex flex-col gap-1 p-2 bg-gray-200 border rounded-sm p-1 border-transparent focus-within:border-blue-500 min-h-[80px]">
               <div>
                 <EnvironmentFilled />{" "}
@@ -146,7 +192,7 @@ const TransportWidget = ({
               </Form.Item>
             </div>
           </Col>
-          {tripType === "oneWay" && (
+          {ticketType === "oneWay" && (
             <Col span={6}>
               <div className="flex flex-col gap-1 p-2 bg-gray-200 border rounded-sm p-1 border-transparent focus-within:border-blue-500 min-h-[80px]">
                 <div>
@@ -162,13 +208,14 @@ const TransportWidget = ({
                     placeholder="Chọn ngày đi"
                     size="middle"
                     className="w-full"
+                    value={data?.date}
                     minDate={dayjs()}
                   />
                 </Form.Item>
               </div>
             </Col>
           )}
-          {tripType === "return" && (
+          {ticketType === "return" && (
             <Col span={8}>
               <div className="flex flex-col gap-1 p-2 bg-gray-200 border rounded-sm p-1 border-transparent focus-within:border-blue-500 min-h-[80px]">
                 <div className="flex">
