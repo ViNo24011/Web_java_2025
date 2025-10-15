@@ -1,10 +1,9 @@
 "use client";
-import { Modal, Button } from "antd";
-import React, { useMemo, useState, useEffect } from "react";
-import dayjs from "dayjs";
 import { LOCATIONS, TRIP_TYPES } from "@/lib/constants";
 import useBookingStore from "@/store/useBookingStore";
-import useWidgetStore from "@/store/useWidgetStore";
+import { Button, Modal } from "antd";
+import dayjs from "dayjs";
+import React, { useEffect, useMemo, useState } from "react";
 
 interface SeatModalProps {
   isOpen: boolean;

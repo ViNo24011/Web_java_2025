@@ -1,17 +1,16 @@
 "use client";
-import React, { useEffect, useMemo, useState } from "react";
-import { Button, Card, Col, DatePicker, Form, Radio, Row, Select } from "antd";
+import { LOCATIONS } from "@/lib/constants";
+import useBookingStore from "@/store/useBookingStore";
 import {
   CalendarFilled,
   EnvironmentFilled,
   SearchOutlined,
   SwapOutlined,
 } from "@ant-design/icons";
+import { Button, Card, Col, DatePicker, Form, Radio, Row, Select } from "antd";
 import dayjs from "dayjs";
-import { LOCATIONS } from "@/lib/constants";
 import { useRouter, useSearchParams } from "next/navigation";
-import useWidgetStore from "@/store/useWidgetStore";
-import useBookingStore from "@/store/useBookingStore";
+import React, { useMemo, useState } from "react";
 
 const { Option } = Select;
 const { RangePicker } = DatePicker;
@@ -27,7 +26,6 @@ const TransportWidget: React.FC<TransportWidgetProps> = ({
 }) => {
   const [form] = Form.useForm();
   const router = useRouter();
-  const { data } = useWidgetStore();
   const [ticketType, setTicketType] = useState<string>("oneWay");
   const setBookingData = useBookingStore((state) => state.setData);
   const bookingData = useBookingStore((state) => state.data);
@@ -208,7 +206,6 @@ const TransportWidget: React.FC<TransportWidgetProps> = ({
                     placeholder="Chọn ngày đi"
                     size="middle"
                     className="w-full"
-                    value={data?.date}
                     minDate={dayjs()}
                   />
                 </Form.Item>

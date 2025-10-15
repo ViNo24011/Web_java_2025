@@ -1,27 +1,17 @@
 "use client";
+import Filter from "@/components/Filter";
 import PageLayout from "@/components/PageLayout";
 import TransportWidget from "@/components/TransportWidget";
-import Filter from "@/components/Filter";
-import React, { useMemo, useState, useEffect, useCallback } from "react";
-import { Badge, Card, Divider, QRCode, Select, Spin, Steps } from "antd";
 import TripCard from "@/components/TripCard";
-import SeatModal from "./SeatModal";
-import useBookingStore from "@/store/useBookingStore";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog";
-import { coachTypeMap, PAYMENT_STATUS, TICKET_TYPE } from "@/lib/constants";
-import { oneWayStepItems, returnStepItems } from "./const";
-import useWidgetStore from "@/store/useWidgetStore";
+import { TICKET_TYPE } from "@/lib/constants";
 import { mockSchedules } from "@/lib/mock/mockSchedule";
-import dayjs from "dayjs";
-import { RefreshCcwIcon } from "lucide-react";
+import useBookingStore from "@/store/useBookingStore";
 import useLoginStore from "@/store/useLogin";
+import { Card, Select, Steps } from "antd";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { oneWayStepItems, returnStepItems } from "./const";
 import PaymentTab from "./paymentTab";
+import SeatModal from "./SeatModal";
 
 const { Option } = Select;
 
