@@ -31,20 +31,23 @@ const TripCard = ({
     }
   };
   return (
-    <div className="w-full pb-4">
+    <div className="w-full">
       <Card>
         <Row gutter={16} align={"middle"}>
           <Col span={3}>
             <Image src="/logo.png" width={50} height={50} alt="trip" />
           </Col>
           <Col span={4}>
-            <div className="flex flex-col">
-              <div>Quang Huy</div>
+            <div className="flex flex-col gap-1">
               <div>{renderTags(data.coach_type)}</div>
-              <div className="flex items-center gap-1">
-                <EnvironmentFilled />
-                <span>Điểm đi: </span>
-                <span>{data.start_location}</span>
+              <div className="flex flex-col">
+                <div className="flex items-center gap-1">
+                  <EnvironmentFilled />
+                  <span>Điểm đi: </span>
+                </div>
+                <div>
+                  <span>{data.start_location}</span>
+                </div>
               </div>
             </div>
           </Col>
@@ -55,32 +58,31 @@ const TripCard = ({
                 <span>Thời gian: </span>
               </div>
               <div className="flex items-center gap-1">
-                <span>{dayjs(data.start_time).format("HH:mm")}</span>
-                <span> - </span>
-                <span>
-                  {dayjs(data.start_time)
-                    .add(data.time_required, "hour")
-                    .format("HH:mm")}
-                </span>
+                <span>{dayjs(data.start_time).format("DD/MM/YYYY HH:mm")}</span>
               </div>
             </div>
           </Col>
           <Col span={4}>
-            <div className="flex items-center gap-1">
-              <UserOutlined />
-              <span>Còn lại: </span>
-              <span>
-                {data?.seat_list?.length ??
-                  0 - (data?.ordered_seat?.length ?? 0)}
-              </span>
-              <span> / {data?.seat_list?.length ?? 0}</span>
+            <div className="flex flex-col items-center gap-1">
+              <div className="flex items-center gap-1">
+                <UserOutlined />
+                <div>Còn lại: </div>
+              </div>
+              <div>
+                <span>
+                  {data?.total_seat ?? 0 - (data?.ordered_seat?.length ?? 0)}
+                </span>
+                <span> / {data?.total_seat ?? 0}</span>
+              </div>
             </div>
           </Col>
           <Col span={4}>
-            <div className="flex items-center gap-1">
-              <DollarOutlined />
-              <span>Giá: </span>
-              <span>{data.price.toLocaleString()} VNĐ</span>
+            <div className="flex flex-col items-center gap-1">
+              <div className="flex items-center gap-1">
+                <DollarOutlined />
+                <div>Giá: </div>
+              </div>
+              <div>{data.price.toLocaleString()} VNĐ</div>
             </div>
           </Col>
           <Col span={3}>

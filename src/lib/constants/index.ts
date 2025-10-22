@@ -31,6 +31,12 @@ export const TRIP_TYPES = {
   limousine_cabin: "Limousine Cabin VIP",
 };
 
+export const COACH_STATUS = {
+  running: "Đang chạy",
+  maintenance: "Đang bảo trì",
+  inactive: "Không hoạt động",
+};
+
 export const PAYMENT_STATUS = {
   pending: "pending",
   done: "done",
@@ -38,8 +44,8 @@ export const PAYMENT_STATUS = {
 };
 
 export const TICKET_TYPE = {
-  oneWay: "oneWay",
-  return: "return",
+  oneWay: "Một chiều",
+  return: "Khứ hồi",
 };
 
 export const coachTypeMap = {

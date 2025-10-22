@@ -1,5 +1,5 @@
 export interface ISchedule {
-  trip_id: string;
+  trip_id?: string;
   start_location: string;
   end_location: string;
   start_time: string;
@@ -13,11 +13,9 @@ export interface ISchedule {
 
 export interface ICoach {
   coach_id: string;
-  trip_id: string;
   coach_type: string;
   total_seat: number;
-  ordered_seat: string[];
-  price: number;
+  status: string; //running, maintenance, inactive
 }
 
 export interface IAccount {

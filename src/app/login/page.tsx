@@ -12,12 +12,16 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { mockAccounts } from "@/lib/mock/mockAccounts";
+import { IAccount } from "@/types";
+import useLoginStore from "@/store/useLogin";
+import { useRouter } from "next/navigation";
 
 const page = () => {
   const [loading, setLoading] = useState(false);
-
+  const router = useRouter();
   const form = useForm({
     defaultValues: {
       username: "",
@@ -25,9 +29,24 @@ const page = () => {
     },
   });
 
+  const { isLoggedIn } = useLoginStore();
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      router.push("/");
+    }
+  }, [isLoggedIn, router]);
+
   const onSubmit = async (data: any) => {
     setLoading(true);
-    console.log(data);
+    const account = mockAccounts.find(
+      (account) =>
+        account.username === data.username && account.password === data.password
+    );
+    if (account) {
+      useLoginStore.setState({ isLoggedIn: true, data: account as IAccount });
+      router.push("/");
+    }
     // Reset loading after processing
     setTimeout(() => setLoading(false), 1000);
   };

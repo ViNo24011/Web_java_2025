@@ -6,6 +6,7 @@ import Navbar from "@/components/Navbar";
 import Image from "next/image";
 import Footer from "@/components/Footer";
 import { AxiosInterceptor } from "@/lib/api/config";
+import { Toaster } from "@/components/ui/sonner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -51,6 +52,7 @@ export default function RootLayout({
             </div>
           </div>
           <Footer />
+          <Toaster richColors closeButton />
         </AxiosInterceptor>
       </body>
     </html>

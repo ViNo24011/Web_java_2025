@@ -3,12 +3,22 @@ import Image from "next/image";
 import { SearchBar } from "./Search";
 import { Button } from "./ui/button";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
+import useLoginStore from "@/store/useLogin";
+import { UserIcon, LogOut, User, History, Settings } from "lucide-react";
+import { Dropdown, Menu } from "antd";
 
 const Navbar = () => {
   const [active, setActive] = useState<string>("/");
   const path = usePathname();
+  const router = useRouter();
+  const { isLoggedIn, data: userData, clearData } = useLoginStore();
+
+  const handleLogout = () => {
+    clearData();
+    router.push("/");
+  };
 
   const pathLabel = [
     {
@@ -67,9 +77,61 @@ const Navbar = () => {
           ))}
         </div>
         <div className="flex flex-1 justify-center items-center">
-          <Button className="hover:bg-white hover:border hover:border-black hover:text-black">
-            <Link href="/login">Đăng nhập</Link>
-          </Button>
+          {isLoggedIn ? (
+            <Dropdown
+              menu={{
+                items: [
+                  {
+                    key: "profile",
+                    label: (
+                      <div className="flex items-center gap-2">
+                        <User className="h-4 w-4" />
+                        <span>Thông tin tài khoản</span>
+                      </div>
+                    ),
+                    onClick: () => router.push("/profile"),
+                  },
+                  ...(userData.role === "admin"
+                    ? [
+                        {
+                          key: "dashboard",
+                          label: (
+                            <div className="flex items-center gap-2">
+                              <Settings className="h-4 w-4" />
+                              <span>Quản lý</span>
+                            </div>
+                          ),
+                          onClick: () => router.push("/dashboard/accounts"),
+                        },
+                      ]
+                    : []),
+
+                  {
+                    key: "logout",
+                    label: (
+                      <div className="flex items-center gap-2">
+                        <LogOut className="h-4 w-4" />
+                        <span>Đăng xuất</span>
+                      </div>
+                    ),
+                    onClick: handleLogout,
+                  },
+                ],
+              }}
+              placement="bottomRight"
+              trigger={["click"]}
+            >
+              <Button className="bg-white border border-black text-black hover:bg-gray-200">
+                <div className="flex items-center gap-2">
+                  <UserIcon className="h-4 w-4" /> {userData.name}
+                </div>
+              </Button>
+            </Dropdown>
+          ) : (
+            <Button className="hover:bg-white hover:border hover:border-black hover:text-black">
+              <Link href="/login">Đăng nhập</Link>
+            </Button>
+          )}
         </div>
       </div>
     </nav>
