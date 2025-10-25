@@ -45,6 +45,7 @@ import { ColumnsType } from "antd/es/table";
 import { mockSchedules } from "@/lib/mock/mockSchedule";
 import dayjs from "dayjs";
 import ScheduleModal from "./ScheduleModal";
+import SeatModal from "./SeatModal";
 
 interface Schedule {
   id: string;
@@ -71,6 +72,7 @@ const SchedulesPage = () => {
   );
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [openSeatModal, setOpenSeatModal] = useState(false);
   const [pagination, setPagination] = useState({
     current: 1,
     pageSize: 10,
@@ -167,60 +169,78 @@ const SchedulesPage = () => {
       title: "ID",
       dataIndex: "trip_id",
       key: "trip_id",
-      width: 100,
+      width: 120,
     },
     {
       title: "Biển số xe",
       dataIndex: "coach_id",
       key: "coach_id",
-      width: 100,
+      width: 130,
     },
     {
       title: "Điểm đi",
       dataIndex: "start_location",
       key: "start_location",
-      width: 120,
+      width: 150,
     },
     {
       title: "Điểm đến",
       dataIndex: "end_location",
       key: "end_location",
-      width: 120,
+      width: 150,
     },
     {
       title: "Giờ khởi hành",
       dataIndex: "start_time",
       key: "start_time",
       render: (time) => dayjs(time).format("DD/MM/YYYY HH:mm"),
-      width: 120,
+      width: 160,
     },
     {
       title: "Loại xe",
       dataIndex: "coach_type",
       key: "coach_type",
-      width: 100,
+      width: 120,
     },
     {
       title: "Số ghế",
       dataIndex: "total_seat",
       key: "total_seat",
-      width: 80,
+      width: 100,
       render: (total_seat, record) =>
         `${record.ordered_seat?.length ?? 0} / ${total_seat}`,
+    },
+    {
+      title: "Giá vé",
+      dataIndex: "price",
+      key: "price",
+      width: 130,
+      render: (price) => `${price.toLocaleString("vi-VN")} VNĐ`,
     },
     {
       title: "Trạng thái",
       dataIndex: "status",
       key: "status",
       render: (status) => getStatusBadge(status),
-      width: 80,
+      width: 120,
     },
     {
       title: "Thao tác",
       key: "action",
-      width: 100,
+      width: 120,
+      fixed: "right",
       render: (_, record) => (
         <div className="flex items-center">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => {
+              setEditingSchedule(record);
+              setOpenSeatModal(true);
+            }}
+          >
+            <Eye className="h-4 w-4" />
+          </Button>
           <Button
             variant="ghost"
             size="sm"
@@ -309,10 +329,14 @@ const SchedulesPage = () => {
           <Table
             style={{
               height: "450px",
-              width: "100%",
+              // width: "100%",
               overflowY: "auto",
               overflowX: "auto",
             }}
+            // scroll={{
+            //   x: 400,
+            //   y: 400,
+            // }}
             rowSelection={{
               selectedRowKeys,
               onChange: (selectedKeys: React.Key[]) => {
@@ -323,9 +347,6 @@ const SchedulesPage = () => {
             columns={columns}
             dataSource={paginatedSchedules}
             pagination={false}
-            onRow={(record) => ({
-              style: { cursor: "pointer" },
-            })}
           />
           <BasePagination
             current={pagination.current}
@@ -345,6 +366,12 @@ const SchedulesPage = () => {
       <ScheduleModal
         isOpen={isModalOpen}
         onClose={handleModalClose}
+        data={editingSchedule}
+        onSubmit={handleModalSubmit}
+      />
+      <SeatModal
+        isOpen={openSeatModal}
+        onClose={() => setOpenSeatModal(false)}
         data={editingSchedule}
         onSubmit={handleModalSubmit}
       />

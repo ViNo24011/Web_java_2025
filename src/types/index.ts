@@ -4,7 +4,7 @@ export interface ISchedule {
   end_location: string;
   start_time: string;
   price: number;
-  status: string;
+  status: string; //waiting, ended, cancelled
   coach_type: string;
   coach_id: string;
   total_seat: number;

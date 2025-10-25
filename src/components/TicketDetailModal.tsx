@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 import { vi } from "date-fns/locale";
+import { TICKET_TYPE } from "@/lib/constants";
 
 interface TicketDetailModalProps {
   isOpen: boolean;
@@ -121,7 +122,11 @@ const TicketDetailModal: React.FC<TicketDetailModalProps> = ({
             <div className="space-y-2 text-sm">
               <div>
                 <span className="text-gray-600">Loại vé:</span>
-                <span className="ml-2 font-medium">{ticket.ticket_type}</span>
+                <span className="ml-2 font-medium">
+                  {TICKET_TYPE[
+                    ticket.ticket_type as keyof typeof TICKET_TYPE
+                  ] || ""}
+                </span>
               </div>
               <span className="flex items-center gap-1">
                 <span className="text-gray-600">Trạng thái:</span>

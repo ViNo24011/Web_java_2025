@@ -268,7 +268,7 @@ const paymentTab = () => {
                   </div>
                 </div>
                 <Divider />
-                {bookingData?.ticket_type === TICKET_TYPE.return && (
+                {bookingData?.ticket_type === "return" && (
                   <>
                     <div className="flex flex-col gap-1">
                       <div className="font-bold text-lg mb-2">Chiều về</div>

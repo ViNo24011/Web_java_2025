@@ -13,27 +13,11 @@ interface SeatModalProps {
   currentTab: number;
 }
 
-const getSeatCountByType = (type?: string): number => {
-  if (!type) return 0;
-  switch (type.toLowerCase()) {
-    case "minibus":
-      return 16;
-    case "limousine":
-      return 45;
-    case "limousine_cabin":
-      return 24;
-    default:
-      return 20;
-  }
-};
-
-// Generate seat layout based on vehicle type
 const generateSeatLayout = (type: string) => {
   const vehicleType = type.toLowerCase();
 
   switch (vehicleType) {
     case "minibus":
-      // 5 rows: 4 rows with 3 seats, last row with 4 seats
       return {
         floors: [
           {
@@ -50,7 +34,6 @@ const generateSeatLayout = (type: string) => {
       };
 
     case "limousine":
-      // 2 floors: A bottom, B top, 3 seats per row, last row A=5 seats, B=4 seats
       return {
         floors: [
           {
@@ -83,7 +66,6 @@ const generateSeatLayout = (type: string) => {
       };
 
     case "limousine_cabin":
-      // 2 floors: A bottom, B top, 2 seats per row
       return {
         floors: [
           {
@@ -243,100 +225,139 @@ const SeatModal: React.FC<SeatModalProps> = ({
           onClick={handleOk}
           disabled={selectedSeats.length === 0}
         >
-          Xác nhận ({selectedSeats.length})
+          Xác nhận ({selectedSeats.length} ghế)
         </Button>,
       ]}
-      width={900}
+      width={1000}
+      className="seat-modal"
     >
-      <div className="flex flex-row gap-6">
-        <div className="flex-1 rounded-md bg-gray-50 p-4">
-          <div className="text-base font-semibold mb-3">
-            Thông tin chuyến đi
-          </div>
-          <div className="space-y-2 text-sm">
-            <div className="flex justify-between">
-              <span className="text-gray-600">Điểm đi</span>
-              <span className="font-medium">{startLabel}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-600">Điểm đến</span>
-              <span className="font-medium">{endLabel}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-600">Thời gian</span>
-              <span className="font-medium">
-                {data?.start_time
-                  ? dayjs(data.start_time).format("DD/MM/YYYY HH:mm")
-                  : "-"}
-              </span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-600">Loại xe</span>
-              <span className="font-medium">{typeLabel}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-600">Giá vé</span>
-              <span className="font-medium">
-                {data?.price.toLocaleString()} VNĐ
-              </span>
+      <div className="flex flex-col lg:flex-row gap-6">
+        {/* Trip Information Card */}
+        <div className="lg:w-80 w-full">
+          <div className="bg-gray-50 rounded-lg p-4 border">
+            <h3 className="text-lg font-semibold mb-4">Thông tin chuyến đi</h3>
+
+            <div className="space-y-3">
+              <div className="flex justify-between">
+                <span className="text-gray-600">Điểm đi</span>
+                <span className="font-medium">{startLabel}</span>
+              </div>
+
+              <div className="flex justify-between">
+                <span className="text-gray-600">Điểm đến</span>
+                <span className="font-medium">{endLabel}</span>
+              </div>
+
+              <div className="flex justify-between">
+                <span className="text-gray-600">Thời gian</span>
+                <span className="font-medium">
+                  {data?.start_time
+                    ? dayjs(data.start_time).format("DD/MM/YYYY HH:mm")
+                    : "-"}
+                </span>
+              </div>
+
+              <div className="flex justify-between">
+                <span className="text-gray-600">Loại xe</span>
+                <span className="font-medium">{typeLabel}</span>
+              </div>
+
+              <div className="flex justify-between border-t pt-3">
+                <span className="text-gray-600">Giá vé</span>
+                <span className="font-semibold text-green-600">
+                  {data?.price.toLocaleString()} VNĐ
+                </span>
+              </div>
             </div>
           </div>
         </div>
 
+        {/* Seat Selection Area */}
         <div className="flex-1">
-          <div className="flex items-center justify-between mb-3">
-            <div className="text-base font-semibold">Chọn ghế</div>
-            <div className="flex items-center gap-3 text-xs">
-              <div className="flex items-center gap-1">
-                <span className="w-4 h-4 inline-block rounded border bg-white" />{" "}
-                Trống
-              </div>
-              <div className="flex items-center gap-1">
-                <span className="w-4 h-4 inline-block rounded border bg-yellow-200" />{" "}
-                Đang chọn
-              </div>
-              <div className="flex items-center gap-1">
-                <span className="w-4 h-4 inline-block rounded border bg-gray-300" />{" "}
-                Đã bán
+          <div className="bg-white rounded-lg border p-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold mb-3 sm:mb-0">Chọn ghế</h3>
+
+              {/* Legend */}
+              <div className="flex items-center gap-4 text-sm">
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-4 rounded border bg-white"></div>
+                  <span className="text-gray-600">Trống</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-4 rounded border bg-blue-100 border-blue-300"></div>
+                  <span className="text-gray-600">Đang chọn</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-4 rounded border bg-gray-300"></div>
+                  <span className="text-gray-600">Đã bán</span>
+                </div>
               </div>
             </div>
-          </div>
-          <div className="space-y-4">
-            {seatLayout.floors.map((floor, floorIndex) => (
-              <div key={floorIndex} className="space-y-2">
-                <div className="text-sm font-semibold text-gray-700 mb-2">
-                  {floor.name}
-                </div>
-                <div className="space-y-1">
-                  {floor.rows.map((row, rowIndex) => (
-                    <div key={rowIndex} className="flex gap-2 justify-center">
-                      {row.seats.map((seat) => {
-                        const sold = isSold(seat);
-                        const selected = isSelected(seat);
-                        return (
-                          <button
-                            key={seat}
-                            type="button"
-                            onClick={() => toggleSeat(seat)}
-                            disabled={sold}
-                            className={[
-                              "h-10 w-12 rounded border text-sm font-medium transition-colors",
-                              sold
-                                ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                                : selected
-                                ? "bg-yellow-200 border-yellow-300"
-                                : "bg-white hover:bg-yellow-50",
-                            ].join(" ")}
-                          >
-                            {seat}
-                          </button>
-                        );
-                      })}
+
+            {/* Seat Layout */}
+            <div className="space-y-4">
+              {seatLayout.floors.map((floor, floorIndex) => (
+                <div key={floorIndex} className="space-y-2">
+                  <h4 className="text-base font-medium text-gray-700">
+                    {floor.name}
+                  </h4>
+
+                  <div className="bg-gray-50 rounded p-3">
+                    <div className="space-y-1">
+                      {floor.rows.map((row, rowIndex) => (
+                        <div
+                          key={rowIndex}
+                          className="flex gap-1 justify-center"
+                        >
+                          {row.seats.map((seat) => {
+                            const sold = isSold(seat);
+                            const selected = isSelected(seat);
+                            return (
+                              <button
+                                key={seat}
+                                type="button"
+                                onClick={() => toggleSeat(seat)}
+                                disabled={sold}
+                                className={[
+                                  "h-10 w-12 rounded border text-sm font-medium transition-colors",
+                                  sold
+                                    ? "bg-gray-300 border-gray-300 text-gray-500 cursor-not-allowed"
+                                    : selected
+                                    ? "bg-blue-100 border-blue-300 text-blue-700"
+                                    : "bg-white border-gray-300 text-gray-700 hover:bg-blue-50",
+                                ].join(" ")}
+                              >
+                                {seat}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      ))}
                     </div>
-                  ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Selected Seats Summary */}
+            {selectedSeats.length > 0 && (
+              <div className="mt-4 bg-blue-50 rounded p-3 border border-blue-200">
+                <div className="mb-2">
+                  <span className="font-medium text-blue-800">
+                    Ghế đã chọn:{" "}
+                  </span>
+                  <span className="text-blue-700">
+                    {selectedSeats.join(", ")}
+                  </span>
+                </div>
+                <div className="text-sm text-blue-600">
+                  Tổng cộng: {selectedSeats.length} ghế ×{" "}
+                  {data?.price.toLocaleString()} VNĐ ={" "}
+                  {(data?.price * selectedSeats.length).toLocaleString()} VNĐ
                 </div>
               </div>
-            ))}
+            )}
           </div>
         </div>
       </div>

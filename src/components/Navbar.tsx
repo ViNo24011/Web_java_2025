@@ -48,7 +48,7 @@ const Navbar = () => {
   ];
 
   return (
-    <nav className="flex p-4 bg-white h-24">
+    <nav className="flex p-4 bg-white h-24 w-[100vw]">
       <div className="flex items-center w-full min-h-full gap-4">
         <Link className="flex flex-1 justify-center items-center" href="/">
           <Image
@@ -123,7 +123,8 @@ const Navbar = () => {
             >
               <Button className="bg-white border border-black text-black hover:bg-gray-200">
                 <div className="flex items-center gap-2">
-                  <UserIcon className="h-4 w-4" /> {userData.name}
+                  <UserIcon className="h-4 w-4" />{" "}
+                  {userData.name.split(" ").slice(-1)[0]}
                 </div>
               </Button>
             </Dropdown>

@@ -31,13 +31,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased `}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         suppressHydrationWarning
       >
         <AxiosInterceptor>
           <div className="relative min-h-screen">
             {/* background image */}
-            <div className="fixed inset-0 -z-10">
+            <div className="fixed inset-0 -z-10 left-0 top-0 w-[100vw] h-[100vh]">
               <Image
                 src="/background.jpg"
                 alt="Background"
@@ -47,7 +47,7 @@ export default function RootLayout({
               />
             </div>
             <Navbar />
-            <div className="flex justify-center items-start mt-4 mb-12">
+            <div className="flex justify-center w-full items-start mt-4 mb-12">
               {children}
             </div>
           </div>

@@ -1,17 +1,17 @@
 "use client";
 
+import ChangePasswordModal from "@/components/ChangePasswordModal";
 import BasePagination from "@/components/ui/antd-pagination";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { useRequireAdmin } from "@/hooks/useAuth";
 import { mockAccounts } from "@/lib/mock/mockAccounts";
 import { IAccount } from "@/types";
-import { useRequireAdmin } from "@/hooks/useAuth";
 import { Table } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import {
-  Eye,
   KeyRound,
   Plus,
   Search,
@@ -22,8 +22,7 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import EditProfileModal from "@/components/EditProfileModal";
-import ChangePasswordModal from "@/components/ChangePasswordModal";
+import AccountModal from "./AccountModal";
 
 const AccountsPage = () => {
   const router = useRouter();
@@ -291,22 +290,10 @@ const AccountsPage = () => {
       </Card>
 
       {/* Edit Profile Modal */}
-      <EditProfileModal
+      <AccountModal
         isOpen={isModalOpen}
         onClose={handleModalClose}
-        data={
-          editingAccount || {
-            account_id: "",
-            name: "",
-            username: "",
-            password: "",
-            role: "",
-            phone: "",
-            address: "",
-            order_history: [],
-            note: "",
-          }
-        }
+        data={editingAccount}
         onSubmit={handleModalSubmit}
       />
 

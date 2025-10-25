@@ -59,7 +59,7 @@ const Search = () => {
   const handleSubmitSeats = (seats: string[]) => {
     setIsSeatModalOpen(false);
 
-    const maxSteps = ticketType === TICKET_TYPE.return ? 3 : 2;
+    const maxSteps = ticketType === "return" ? 3 : 2;
     if (current < maxSteps - 1) {
       setCurrent(current + 1);
     }
@@ -170,7 +170,7 @@ const Search = () => {
                     type="navigation"
                     size="small"
                     items={
-                      ticketType === TICKET_TYPE.return
+                      ticketType === "return"
                         ? returnStepItems
                         : oneWayStepItems
                     }
@@ -178,7 +178,7 @@ const Search = () => {
                     onChange={onTabChange}
                   />
                 </div>
-                {current !== (ticketType === TICKET_TYPE.return ? 2 : 1) && (
+                {current !== (ticketType === "return" ? 2 : 1) && (
                   <div className="flex-1 min-h-[200px] rounded-lg bg-gray-50">
                     {loading ? (
                       <div className="flex justify-center items-center h-32">
@@ -215,7 +215,7 @@ const Search = () => {
                     )}
                   </div>
                 )}
-                {current === (ticketType === TICKET_TYPE.return ? 2 : 1) && (
+                {current === (ticketType === "return" ? 2 : 1) && (
                   <PaymentTab />
                 )}
               </div>

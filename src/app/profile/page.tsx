@@ -17,7 +17,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import PageLayout from "@/components/PageLayout";
-import EditProfileModal from "@/components/EditProfileModal";
+import EditProfileModal from "@/app/profile/EditProfileModal";
 import BookingHistoryCard from "@/app/profile/BookingHistoryCard";
 import TicketDetailModal from "@/components/TicketDetailModal";
 import { ITicket } from "@/types";

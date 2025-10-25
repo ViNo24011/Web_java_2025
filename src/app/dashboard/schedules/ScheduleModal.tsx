@@ -7,7 +7,12 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { coachTypeMap, LOCATIONS, TRIP_TYPES } from "@/lib/constants";
+import {
+  COACH_STATUS,
+  coachTypeMap,
+  LOCATIONS,
+  TRIP_TYPES,
+} from "@/lib/constants";
 import useBookingStore from "@/store/useBookingStore";
 import { IAccount, ICoach, ISchedule } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -194,6 +199,8 @@ const ScheduleModal: React.FC<ScheduleModalProps> = ({
                       <DatePicker
                         {...field}
                         showTime
+                        format="DD/MM/YYYY HH:mm"
+                        minuteStep={5}
                         placeholder="Chọn giờ khởi hành"
                         size="middle"
                         minDate={dayjs()}
@@ -243,10 +250,15 @@ const ScheduleModal: React.FC<ScheduleModalProps> = ({
                       }}
                     >
                       {coachList
-                        .filter((coach) => coach.status === "inactive")
+                        .filter((coach) => coach.status !== "maintenance")
                         .map((coach) => (
                           <Option key={coach.coach_id} value={coach.coach_id}>
-                            {coach.coach_id}
+                            {coach.coach_id} -{" "}
+                            {
+                              COACH_STATUS[
+                                coach.status as keyof typeof COACH_STATUS
+                              ]
+                            }
                           </Option>
                         ))}
                     </Select>
@@ -264,6 +276,16 @@ const ScheduleModal: React.FC<ScheduleModalProps> = ({
                       coachTypeMap[
                         selectedCoach.coach_type as keyof typeof coachTypeMap
                       ].label
+                    }
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Trạng thái</span>
+                  <span className="font-medium">
+                    {
+                      COACH_STATUS[
+                        selectedCoach.status as keyof typeof COACH_STATUS
+                      ]
                     }
                   </span>
                 </div>

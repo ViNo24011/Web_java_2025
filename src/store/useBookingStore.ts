@@ -18,7 +18,7 @@ const initialData: ITicket = {
   name: "",
   address: "",
   phone: "",
-  ticket_type: TICKET_TYPE.oneWay,
+  ticket_type: "oneWay",
   total_price: 0,
   payment_status: PAYMENT_STATUS.pending,
   created_time: dayjs().format("YYYY-MM-DD HH:mm:ss"),
