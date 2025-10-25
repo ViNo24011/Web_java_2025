@@ -42,3 +42,11 @@ next-env.d.ts
 
 # Cấu hình IDE của JetBrains
 .idea/
+
+# Java / Maven
+/backend/target/
+/backend/.mvn/
+/backend/mvnw
+/backend/mvnw.cmd
+*.log
+*.iml
