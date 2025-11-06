@@ -2,10 +2,15 @@ package com.btl.java_web.entity;
 
 import jakarta.persistence.*;
 
-import java.util.List;
+import java.util.*;
+
+import org.apache.catalina.User;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 @Entity
-public class Account {
+public class Account implements UserDetails {
     @Id
     @GeneratedValue (strategy = GenerationType.UUID) //random khong lap lai id
     private String account_id;
@@ -23,6 +28,7 @@ public class Account {
     )
     @Column(name = "order_item") // Tên của cột chứa các giá trị String (ví dụ: "order_123", "order_456")
     private List<String> orderHistory;
+
 
     public String getNote() {
         return note;
@@ -94,5 +100,32 @@ public class Account {
 
     public void setOrderHistory(List<String> orderHistory) {
         this.orderHistory = orderHistory;
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        // Lấy vai trò (role) và chuyển nó thành GrantedAuthority
+        // Thêm "ROLE_" vào trước role nếu SecurityConfig yêu cầu (ví dụ: "ROLE_USER")
+        return Collections.singleton(new SimpleGrantedAuthority("ROLE_" + this.role));
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true; // Mặc định là true (tài khoản không hết hạn)
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true; // Mặc định là true (tài khoản không bị khóa)
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true; // Mặc định là true (thông tin đăng nhập không hết hạn)
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true; // Mặc định là true (tài khoản được kích hoạt)
     }
 }
