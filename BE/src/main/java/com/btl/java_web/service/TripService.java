@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.btl.java_web.dto.request.TripUpdatesRequest;
 import com.btl.java_web.entity.Trip;
 import com.btl.java_web.repository.TripRepository;
 
@@ -31,7 +32,7 @@ public class TripService {
         return tripRepository.save(trip);
     }
 
-    public Trip updateTrip(String id, Trip updated) {
+    public Trip updateTrip(String id, TripUpdatesRequest updated) {
         Trip t = tripRepository.findById(id).orElseThrow();
         t.setCost(updated.getCost());
         t.setStatus(updated.getStatus());
