@@ -9,6 +9,8 @@ public class TripUpdatesRequest{
     LocalDateTime startTime;
     String coachId;
     String coachType;
+    int totalSeat;
+
 
     public int getCost() {
         return cost;
@@ -28,5 +30,8 @@ public class TripUpdatesRequest{
 
     public String getCoachType() {
         return coachType;
+    }
+    public int getTotalSeat(){
+        return totalSeat;
     }
 }

@@ -1,6 +1,5 @@
 package com.btl.java_web.config;
 
-import com.btl.java_web.repository.AccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,6 +16,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import com.btl.java_web.repository.AccountRepository;
 
 @Configuration
 @EnableWebSecurity // Kích hoạt bảo mật web Spring
@@ -92,6 +93,7 @@ public class SecurityConfig {
                         // (Chúng ta sẽ thêm ở Bước 4, ví dụ: /profile/me)
                         // .requestMatchers("/profile/me/**").hasAnyRole("USER", "ADMIN")
                         .requestMatchers("/profile/**").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers("/trips/search").hasAnyRole("USER","ADMIN")
 
                         // TẤT CẢ các request còn lại đều phải được xác thực
                         .anyRequest().authenticated()

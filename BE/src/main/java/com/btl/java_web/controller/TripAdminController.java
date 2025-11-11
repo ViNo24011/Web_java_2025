@@ -32,7 +32,7 @@ public class TripAdminController {
     }
 
     @PostMapping("/create")
-    public Trip create(@RequestBody Trip trip) {
+    public String create(@RequestBody Trip trip) {
         return tripService.createTrip(trip);
     }
 
@@ -42,7 +42,7 @@ public class TripAdminController {
     }
 
     @DeleteMapping("/delete/{id}")
-    public void delete(@PathVariable String id) {
-        tripService.deleteTrip(id);
+    public String delete(@PathVariable String id) {
+        return tripService.deleteTrip(id);
     }
 }

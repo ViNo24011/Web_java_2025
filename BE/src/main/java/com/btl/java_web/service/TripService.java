@@ -28,8 +28,12 @@ public class TripService {
         return tripRepository.findById(id).orElse(null);
     }
 
-    public Trip createTrip(Trip trip) {
-        return tripRepository.save(trip);
+    public String createTrip(Trip trip) {
+        if (getTrip(trip.getTripId())==null){
+            tripRepository.save(trip);
+            return "TRIP SAVED";
+        }
+        else return "TRIP EXISTEN";
     }
 
     public Trip updateTrip(String id, TripUpdatesRequest updated) {
@@ -39,10 +43,14 @@ public class TripService {
         t.setStartTime(updated.getStartTime());
         t.setCoachId(updated.getCoachId());
         t.setCoachType(updated.getCoachType());
+        t.setTotalSeat(updated.getTotalSeat());
         return tripRepository.save(t);
     }
 
-    public void deleteTrip(String id) {
+    public String deleteTrip(String id) {
+        if(getTrip(id)!=null){
         tripRepository.deleteById(id);
+        return "TRIP DELETED";}
+        else return "NO TRIP FOUND";
     }
 }
