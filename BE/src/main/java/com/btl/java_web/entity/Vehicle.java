@@ -10,8 +10,12 @@ import lombok.*;
 @AllArgsConstructor
 public class Vehicle {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "coach_id")
-    private String coachId;
+    private Long coachId;
+
+    @Column(name="coach_name", nullable = false)
+    private String coachName;
 
     @Column(name = "coach_type", nullable = false)
     private String coachType;

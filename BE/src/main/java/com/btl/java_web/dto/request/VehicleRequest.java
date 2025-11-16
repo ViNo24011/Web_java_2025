@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class VehicleRequest {
-    private String id;
+    private String coachName;
     private String coachType;
     private int totalSeat;
     private String status;
