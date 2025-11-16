@@ -1,14 +1,14 @@
 server:
   port: 8080
   servlet:
-    context-path: /
+    context-path: /transport
 
 
 spring:
   datasource:
-    url: "jdbc:mysql://127.0.0.1:3306/oop_btl"
+    url: "jdbc:mysql://localhost:3306/TripOrder"
     username: root
-    password: password
+    password: root
   jpa:
     hibernate:
       ddl-auto: update
