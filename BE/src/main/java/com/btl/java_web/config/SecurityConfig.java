@@ -88,10 +88,14 @@ public class SecurityConfig {
                         .requestMatchers("/schedules/**").hasRole("ADMIN") // Tạo lịch trình
                         .requestMatchers("/buses/**").hasRole("ADMIN")     // Tạo xe
                         .requestMatchers("/dashboard/**").hasRole("ADMIN") // Xem thu nhập
+                        
+                        // Admin Booking APIs - Xem tất cả đơn đặt và khách hàng của 1 chuyến
+                        .requestMatchers("/admin/bookings/**").hasRole("ADMIN")
 
                         // --- PHẦN CỦA USER/ADMIN ---
-                        // (Chúng ta sẽ thêm ở Bước 4, ví dụ: /profile/me)
-                        // .requestMatchers("/profile/me/**").hasAnyRole("USER", "ADMIN")
+                        // Booking APIs - USER và ADMIN có thể đặt vé, xem lịch sử, hủy vé
+                        .requestMatchers("/bookings/**").hasAnyRole("USER", "ADMIN")
+                        
                         .requestMatchers("/profile/**").hasAnyRole("USER", "ADMIN")
                         .requestMatchers("/trips/search").hasAnyRole("USER","ADMIN")
 
