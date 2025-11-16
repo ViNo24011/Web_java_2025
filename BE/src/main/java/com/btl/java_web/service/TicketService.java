@@ -3,9 +3,11 @@ package com.btl.java_web.service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
+import com.btl.java_web.dto.response.BookingResponse;
 import com.btl.java_web.entity.Ticket;
 import com.btl.java_web.entity.Trip;
 import com.btl.java_web.repository.TicketRepository;
@@ -95,5 +97,75 @@ public class TicketService {
         }
 
         return Optional.of(saved);
+    }
+
+    /**
+     * Helper method: Convert Ticket to BookingResponse with Trip info
+     */
+    private BookingResponse ticketToBookingResponse(Ticket ticket) {
+        Trip trip = tripRepo.findById(ticket.getTripId()).orElse(null);
+        
+        BookingResponse response = new BookingResponse();
+        response.setTicketId(ticket.getTicketId());
+        response.setAccountId(ticket.getAccountId());
+        response.setName(ticket.getName());
+        response.setPhone(ticket.getPhone());
+        response.setAddress(ticket.getAddress());
+        response.setPrice(ticket.getPrice());
+        response.setTicketType(ticket.getTicketType());
+        response.setPaymentStatus(ticket.getPaymentStatus());
+        response.setCreatedTime(ticket.getCreatedTime());
+        response.setOrderedSeat(ticket.getOrderedSeat());
+        response.setTripId(ticket.getTripId());
+        response.setCoachId(ticket.getCoachId());
+        response.setStartLocation(ticket.getStartLocation());
+        response.setEndLocation(ticket.getEndLocation());
+        
+        if (trip != null) {
+            response.setTripStartTime(trip.getStartTime());
+            response.setTripCost(trip.getCost());
+            response.setTripStatus(trip.getStatus());
+            response.setCoachType(trip.getCoachType());
+            response.setTotalSeat(trip.getTotalSeat());
+        }
+        
+        return response;
+    }
+
+    /**
+     * Get booking history with trip details for a specific account
+     */
+    public List<BookingResponse> getBookingsByAccountWithDetails(String accountId) {
+        return repo.findByAccountIdOrderByCreatedTimeDesc(accountId)
+                .stream()
+                .map(this::ticketToBookingResponse)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Get all bookings with trip details
+     */
+    public List<BookingResponse> getAllBookingsWithDetails() {
+        return repo.findAll()
+                .stream()
+                .map(this::ticketToBookingResponse)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Get bookings for a specific trip with passenger details
+     */
+    public List<BookingResponse> getPassengersByTripWithDetails(String tripId) {
+        return repo.findByTripId(tripId)
+                .stream()
+                .map(this::ticketToBookingResponse)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Get single booking with trip details
+     */
+    public Optional<BookingResponse> getBookingWithDetails(String ticketId) {
+        return repo.findById(ticketId).map(this::ticketToBookingResponse);
     }
 }
