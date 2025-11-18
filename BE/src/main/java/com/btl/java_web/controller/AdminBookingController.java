@@ -27,13 +27,12 @@ public class AdminBookingController {
      * GET /admin/bookings
      * Get all bookings with trip details (Admin only)
      */
-    // @GetMapping("")
-    // @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("")
+    @PreAuthorize("hasRole('ADMIN')")
     // public ResponseEntity<List<BookingResponse>> allBookings() {
     //     List<BookingResponse> bookings = ticketService.getAllBookingsWithDetails();
     //     return ResponseEntity.ok(bookings);
     // }
-     @GetMapping
     public ResponseEntity<?> getAllBookings(@RequestParam(defaultValue = "1") int current, @RequestParam(defaultValue =
             "5") int pageSize) {
         PaginationResponse<BookingResponse> response = ticketService.getAllBookingsWithDetails(current, pageSize);
