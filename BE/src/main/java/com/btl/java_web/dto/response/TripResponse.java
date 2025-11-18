@@ -1,23 +1,13 @@
-package com.btl.java_web.entity;
+package com.btl.java_web.dto.response;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 import jakarta.persistence.ElementCollection;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
-@Entity
-@Table(name = "trip")
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
-public class Trip {
-    @Id
+public class TripResponse {
     private String tripId; // mã chuyến
 
     private String startLocation;

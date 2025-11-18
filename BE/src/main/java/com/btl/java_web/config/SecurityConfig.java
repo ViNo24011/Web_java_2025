@@ -85,7 +85,7 @@ public class SecurityConfig {
                         .requestMatchers("/accounts/**").hasRole("ADMIN")
 
                         // (Thêm các luật cho Admin ở đây như bạn yêu cầu)
-                        .requestMatchers("/schedules/**").hasRole("ADMIN") // Tạo lịch trình
+                        .requestMatchers("/admin/trips/**").hasRole("ADMIN") // Tạo lịch trình
                         .requestMatchers("/buses/**").hasRole("ADMIN")     // Tạo xe
                         .requestMatchers("/dashboard/**").hasRole("ADMIN") // Xem thu nhập
                         
@@ -97,7 +97,7 @@ public class SecurityConfig {
                         .requestMatchers("/bookings/**").hasAnyRole("USER", "ADMIN")
                         
                         .requestMatchers("/profile/**").hasAnyRole("USER", "ADMIN")
-                        .requestMatchers("/trips/search").hasAnyRole("USER","ADMIN")
+                        .requestMatchers("/trips").hasAnyRole("USER","ADMIN")
 
                         // TẤT CẢ các request còn lại đều phải được xác thực
                         .anyRequest().authenticated()

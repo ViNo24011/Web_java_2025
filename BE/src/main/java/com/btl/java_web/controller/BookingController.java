@@ -1,5 +1,6 @@
 package com.btl.java_web.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.btl.java_web.dto.request.BookingRequest;
+import com.btl.java_web.dto.request.DeleteSelectedRequest;
 import com.btl.java_web.dto.response.BookingResponse;
 import com.btl.java_web.entity.Account;
 import com.btl.java_web.entity.Ticket;
@@ -91,32 +93,47 @@ public class BookingController {
      * DELETE /bookings/{ticketId}
      * Cancel a booking (only the owner or ADMIN can cancel)
      */
-    @DeleteMapping("/{ticketId}")
+    @DeleteMapping("/delete-selected")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
-    public ResponseEntity<?> cancelBooking(@PathVariable String ticketId) {
+    public ResponseEntity<?> cancelSelectedBookings(@RequestBody DeleteSelectedRequest req) {
         Account currentUser = getCurrentUser();
         if (currentUser == null) {
             return ResponseEntity.status(401).body("Unauthorized: User not found");
         }
 
-        // Check if ticket exists and belongs to current user (unless ADMIN)
-        Ticket ticket = ticketService.findById(ticketId).orElse(null);
-        if (ticket == null) {
-            return ResponseEntity.status(404).body("Ticket not found");
+        List<String> ids = req.getIds();
+        List<BookingResponse> cancelledBookings = new ArrayList<>();
+        List<String> errors = new ArrayList<>();
+
+        for (String ticketId : ids) {
+            Ticket ticket = ticketService.findById(ticketId).orElse(null);
+            if (ticket == null) {
+                errors.add("Ticket " + ticketId + " not found");
+                continue;
+            }
+
+            // Allow if owner or ADMIN
+            if (!ticket.getAccountId().equals(currentUser.getAccount_id()) && 
+                !currentUser.getRole().equals("ADMIN")) {
+                errors.add("Forbidden: You can only cancel your own bookings for " + ticketId);
+                continue;
+            }
+
+            var result = ticketService.cancelBooking(ticketId, ticket.getAccountId());
+            if (result.isEmpty()) {
+                errors.add("Failed to cancel booking " + ticketId);
+            } else {
+                BookingResponse response = ticketService.getBookingWithDetails(ticketId).orElse(null);
+                if (response != null) {
+                    cancelledBookings.add(response);
+                }
+            }
         }
 
-        // Allow if owner or ADMIN
-        if (!ticket.getAccountId().equals(currentUser.getAccount_id()) && 
-            !currentUser.getRole().equals("ADMIN")) {
-            return ResponseEntity.status(403).body("Forbidden: You can only cancel your own bookings");
+        if (!errors.isEmpty()) {
+            return ResponseEntity.status(400).body("Errors: " + String.join(", ", errors) + ". Cancelled: " + cancelledBookings.size() + " bookings");
         }
 
-        var result = ticketService.cancelBooking(ticketId, ticket.getAccountId());
-        if (result.isEmpty()) {
-            return ResponseEntity.status(400).body("Failed to cancel booking");
-        }
-
-        BookingResponse response = ticketService.getBookingWithDetails(ticketId).orElse(null);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(cancelledBookings);
     }
 }

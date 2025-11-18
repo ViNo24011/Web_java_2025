@@ -1,15 +1,28 @@
 package com.btl.java_web.entity;
 
-import jakarta.persistence.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
-import java.util.*;
-
-import org.apache.catalina.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+@Data
 @Entity
+@NoArgsConstructor
+@AllArgsConstructor
 public class Account implements UserDetails {
     @Id
     @GeneratedValue (strategy = GenerationType.UUID) //random khong lap lai id
@@ -28,79 +41,6 @@ public class Account implements UserDetails {
     )
     @Column(name = "order_item") // Tên của cột chứa các giá trị String (ví dụ: "order_123", "order_456")
     private List<String> orderHistory;
-
-
-    public String getNote() {
-        return note;
-    }
-
-    public void setNote(String note) {
-        this.note = note;
-    }
-
-    public String getAccount_id() {
-        return account_id;
-    }
-
-    public void setAccount_id(String account_id) {
-        this.account_id = account_id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getRole() {
-        return role;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    public List<String> getOrderHistory() {
-        return orderHistory;
-    }
-
-    public void setOrderHistory(List<String> orderHistory) {
-        this.orderHistory = orderHistory;
-    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

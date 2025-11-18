@@ -36,7 +36,7 @@ public class AccountController {
         return accountService.updateAccount(account_id, request);
     }
 
-    @DeleteMapping ("/{account_id}")
+    @DeleteMapping ("/delete_selected")
     String deleteAccount (@PathVariable String account_id){
         accountService.deleteAccount(account_id);
         return "User have been deleted";

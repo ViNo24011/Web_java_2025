@@ -5,9 +5,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.btl.java_web.dto.response.BookingResponse;
+import com.btl.java_web.dto.response.PaginationResponse;
 import com.btl.java_web.entity.Ticket;
 import com.btl.java_web.entity.Trip;
 import com.btl.java_web.repository.TicketRepository;
@@ -145,11 +149,29 @@ public class TicketService {
     /**
      * Get all bookings with trip details
      */
-    public List<BookingResponse> getAllBookingsWithDetails() {
-        return repo.findAll()
-                .stream()
-                .map(this::ticketToBookingResponse)
-                .collect(Collectors.toList());
+    // public List<BookingResponse> getAllBookingsWithDetails() {
+    //     return repo.findAll()
+    //             .stream()
+    //             .map(this::ticketToBookingResponse)
+    //             .collect(Collectors.toList());
+    // }
+    public PaginationResponse<BookingResponse> getAllBookingsWithDetails(int current, int pageSize) {
+        try {
+            int page = Math.max(0, current - 1);
+            Pageable pageable = PageRequest.of(page, pageSize);
+
+            Page<Ticket> ticketPage = repo.findAll(pageable);
+
+            Page<BookingResponse> list = ticketPage.map(i -> ticketToBookingResponse(i));
+            PaginationResponse<BookingResponse> response = new PaginationResponse<>(
+                    list.getContent(),
+                    list.getTotalElements()
+            );
+            return response;
+        } catch (Exception ex) {
+            System.err.println("Lỗi khi lấy danh sách Ticket: " + ex.getMessage());
+            return null;
+        }
     }
 
     /**
