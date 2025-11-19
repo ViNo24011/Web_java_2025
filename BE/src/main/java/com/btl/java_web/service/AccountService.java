@@ -4,7 +4,12 @@ package com.btl.java_web.service;
 import java.util.List;
 import java.util.Optional;
 
+import com.btl.java_web.dto.response.PaginationResponse;
+import com.btl.java_web.dto.response.VehicleResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +27,7 @@ public class AccountService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    public Account createAccount(AccountCreationRequest request){
+    public Boolean createAccount(AccountCreationRequest request){
 
 
         if (accountRepository.existsByUsername(request.getUsername())) {
@@ -44,11 +49,12 @@ public class AccountService {
         account.setNote(request.getNote());
         account.setOrderHistory(request.getOrderHistory());
 
-        return accountRepository.save(account);
+        accountRepository.save(account);
+        return true;
 
     }
 
-    public Account updateAccount(String account_id, AccountUpdateRequest request){
+    public Boolean updateAccount(String account_id, AccountUpdateRequest request){
         Account account = getAccount(account_id);
 
         account.setName(request.getName());
@@ -63,15 +69,25 @@ public class AccountService {
         account.setNote(request.getNote());
         account.setOrderHistory(request.getOrderHistory());
 
-        return accountRepository.save(account);
+        accountRepository.save(account);
+        return true;
     }
 
-    public void deleteAccount(String account_id){
-        accountRepository.deleteById(account_id);
+    public void deleteAccount(List<String> accountIds){
+        accountRepository.deleteAllById(accountIds);
     }
 
-    public List<Account> getAccounts(){
-        return accountRepository.findAll();
+    public PaginationResponse<?> getAccounts(int current, int pageSize){
+        int page = Math.max(0, current - 1);
+        Pageable pageable = PageRequest.of(page, pageSize);
+        Page<Account> accountPage = accountRepository.findAll(pageable);
+
+        PaginationResponse<Account> response = new PaginationResponse<>(
+                accountPage.getContent(),
+                accountPage.getTotalElements()
+        );
+
+        return response;
     }
 
     public Account getAccount (String id){
