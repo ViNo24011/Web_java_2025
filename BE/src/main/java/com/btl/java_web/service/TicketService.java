@@ -108,31 +108,53 @@ public class TicketService {
      */
     private BookingResponse ticketToBookingResponse(Ticket ticket) {
         Trip trip = tripRepo.findById(ticket.getTripId()).orElse(null);
-        
         BookingResponse response = new BookingResponse();
+
         response.setTicketId(ticket.getTicketId());
         response.setAccountId(ticket.getAccountId());
         response.setName(ticket.getName());
         response.setPhone(ticket.getPhone());
         response.setAddress(ticket.getAddress());
-        response.setPrice(ticket.getPrice());
         response.setTicketType(ticket.getTicketType());
         response.setPaymentStatus(ticket.getPaymentStatus());
         response.setCreatedTime(ticket.getCreatedTime());
-        response.setOrderedSeat(ticket.getOrderedSeat());
-        response.setTripId(ticket.getTripId());
-        response.setCoachId(ticket.getCoachId());
+        response.setNote(null);
+
+        // top-level locations
         response.setStartLocation(ticket.getStartLocation());
         response.setEndLocation(ticket.getEndLocation());
-        
+
+        // Outbound (from trip + ticket)
         if (trip != null) {
-            response.setTripStartTime(trip.getStartTime());
-            response.setTripCost(trip.getCost());
-            response.setTripStatus(trip.getStatus());
-            response.setCoachType(trip.getCoachType());
-            response.setTotalSeat(trip.getTotalSeat());
+            BookingResponse.Outbound outbound = new BookingResponse.Outbound();
+            outbound.setPrice((long) trip.getCost());
+            outbound.setTripId(trip.getTripId());
+            outbound.setStartTime(trip.getStartTime());
+            outbound.setCoachType(trip.getCoachType());
+            outbound.setCoachId(ticket.getCoachId());
+            // orderedSeat: ticket stores a single String; if comma-separated, split, else single element
+            if (ticket.getOrderedSeat() != null) {
+                String s = ticket.getOrderedSeat();
+                if (s.contains(",")) {
+                    outbound.setOrderedSeat(java.util.Arrays.stream(s.split(",")).map(String::trim).collect(java.util.stream.Collectors.toList()));
+                } else {
+                    outbound.setOrderedSeat(java.util.List.of(s));
+                }
+            }
+            response.setOutbound(outbound);
+            response.setTotalPrice(outbound.getPrice());
+        } else {
+            // no trip info; try to use ticket price
+            BookingResponse.Outbound outbound = new BookingResponse.Outbound();
+            outbound.setPrice(ticket.getPrice() != null ? ticket.getPrice().longValue() : 0L);
+            outbound.setCoachId(ticket.getCoachId());
+            if (ticket.getOrderedSeat() != null) outbound.setOrderedSeat(java.util.List.of(ticket.getOrderedSeat()));
+            response.setOutbound(outbound);
+            response.setTotalPrice(outbound.getPrice());
         }
-        
+
+        // returnTrip: not stored in current model. leave null so it's omitted in JSON when empty.
+
         return response;
     }
 
