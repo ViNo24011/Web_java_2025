@@ -16,7 +16,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
+import org.springframework.http.HttpMethod;
 import com.btl.java_web.repository.AccountRepository;
 
 @Configuration
@@ -93,7 +93,9 @@ public class SecurityConfig {
                         .requestMatchers("/admin/bookings/**").hasRole("ADMIN")
 
                         // --- PHẦN CỦA USER/ADMIN ---
-                        // Booking APIs - USER và ADMIN có thể đặt vé, xem lịch sử, hủy vé
+                        // Cho phép ai cũng được gọi POST /bookings (Đặt vé)
+                        .requestMatchers(HttpMethod.POST, "/bookings").permitAll()
+                        // Booking APIs - USER và ADMIN có thể xem lịch sử, hủy vé
                         .requestMatchers("/bookings/**").hasAnyRole("USER", "ADMIN")
                         
                         .requestMatchers("/profile/**").hasAnyRole("USER", "ADMIN")
