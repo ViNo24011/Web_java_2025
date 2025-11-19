@@ -1,5 +1,8 @@
 package com.btl.java_web.service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -10,7 +13,6 @@ import org.springframework.stereotype.Service;
 
 import com.btl.java_web.dto.request.TripUpdatesRequest;
 import com.btl.java_web.dto.response.PaginationResponse;
-import com.btl.java_web.dto.response.TripResponse;
 import com.btl.java_web.entity.Trip;
 import com.btl.java_web.repository.TripRepository;
 
@@ -22,17 +24,16 @@ public class TripService {
         this.tripRepository = tripRepository;
     }
 
-    public PaginationResponse<TripResponse> getAll(int current, int pageSize) {
+    public PaginationResponse<Trip> getAll(int current, int pageSize) {
         try {
             int page = Math.max(0, current - 1);
             Pageable pageable = PageRequest.of(page, pageSize);
 
             Page<Trip> tripPage = tripRepository.findAll(pageable);
 
-            Page<TripResponse> list = tripPage.map(i -> convertToResponse(i));
-            PaginationResponse<TripResponse> response = new PaginationResponse<>(
-                    list.getContent(),
-                    list.getTotalElements()
+            PaginationResponse<Trip> response = new PaginationResponse<>(
+                    tripPage.getContent(),
+                    tripPage.getTotalElements()
             );
             return response;
         } catch (Exception ex) {
@@ -41,25 +42,29 @@ public class TripService {
         }
     }
 
-    public List<Trip> searchTrips(String start, String end) {
-        return tripRepository.findByStartLocationAndEndLocation(start, end);
+    public List<Trip> searchTrips(String start, String end,String date) {
+        LocalDateTime startTime=LocalDate.parse(date, DateTimeFormatter.ISO_LOCAL_DATE_TIME).atStartOfDay();
+        LocalDateTime limit = startTime.toLocalDate().plusDays(1).atStartOfDay();
+        return tripRepository.findByStartLocationAndEndLocationAndStartTimeGreaterThanEqualAndStartTimeLessThan(start, end,(startTime.isAfter(LocalDateTime.now()))?startTime:LocalDateTime.now(),limit);
     }
-
     public Trip getTrip(String id) {
         return tripRepository.findById(id).orElse(null);
     }
 
     public String createTrip(Trip trip) {
         if (getTrip(trip.getTripId())==null){
-            tripRepository.save(trip);
-            return "TRIP SAVED";
+            List<Trip> searchCoach=tripRepository.findCoach(trip.getCoachId(),trip.getStartTime(),trip.getTimeTravel());
+            if(searchCoach!=null && searchCoach.isEmpty())
+            {tripRepository.save(trip);
+                return "TRIP SAVED";
+            }   else return "COACH OVERLAPPED";
         }
         else return "TRIP EXISTEN";
     }
 
     public Trip updateTrip(String id, TripUpdatesRequest updated) {
         Trip t = tripRepository.findById(id).orElseThrow();
-        t.setCost(updated.getCost());
+        t.setPrice(updated.getPrice());
         t.setStatus(updated.getStatus());
         t.setStartTime(updated.getStartTime());
         t.setCoachId(updated.getCoachId());
@@ -91,22 +96,5 @@ public class TripService {
             System.err.println("Lỗi khi xóa nhiều Trip: " + ex.getMessage());
             return false;
         }
-    }
-    private TripResponse convertToResponse(Trip trip) {
-        TripResponse response = new TripResponse();
-        if (trip.getTripId() != null) {
-            response.setTripId(trip.getTripId());
-        }
-
-        response.setStartLocation(trip.getStartLocation());
-        response.setEndLocation(trip.getEndLocation());
-        response.setStartTime(trip.getStartTime());
-        response.setCost(trip.getCost());
-        response.setStatus(trip.getStatus());
-        response.setCoachType(trip.getCoachType());
-        response.setCoachId(trip.getCoachId());
-        response.setTotalSeat(trip.getTotalSeat());
-        response.setOrderedSeat(trip.getOrderedSeat());
-        return response;
     }
 }

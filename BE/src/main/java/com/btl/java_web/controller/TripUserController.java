@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.btl.java_web.entity.Trip;
 import com.btl.java_web.service.TripService;
 
+import com.btl.java_web.dto.response.TripResponse;
+
 @RestController
 @RequestMapping("/trips")
 public class TripUserController {
@@ -20,8 +22,11 @@ public class TripUserController {
     }
 
     @GetMapping("/search")
-    public List<Trip> search(@RequestParam String from, @RequestParam String to) {
-        return tripService.searchTrips(from, to);
+    public List<Trip> search(@RequestParam String from, @RequestParam String to,@RequestParam String date) {
+        return tripService.searchTrips(from, to,date);
+    }
+    public TripResponse search(@RequestParam String from, @RequestParam String to,@RequestParam String startDate,@RequestParam String endDate){
+        return new TripResponse(tripService.searchTrips(from,to,startDate),tripService.searchTrips(from,to,endDate));
     }
 
     @GetMapping("/{id}")

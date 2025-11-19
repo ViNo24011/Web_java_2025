@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.btl.java_web.dto.request.DeleteSelectedRequest;
 import com.btl.java_web.dto.request.TripUpdatesRequest;
 import com.btl.java_web.dto.response.PaginationResponse;
-import com.btl.java_web.dto.response.TripResponse;
 import com.btl.java_web.entity.Trip;
 import com.btl.java_web.service.TripService;
 
@@ -32,7 +31,7 @@ public class TripAdminController {
     @GetMapping
     public ResponseEntity<?> getAllTrip(@RequestParam(defaultValue = "1") int current, @RequestParam(defaultValue =
             "5") int pageSize) {
-        PaginationResponse<TripResponse> response = tripService.getAll(current, pageSize);
+        PaginationResponse<Trip> response = tripService.getAll(current, pageSize);
         if(response == null) {
             return ResponseEntity.notFound().build();
         }

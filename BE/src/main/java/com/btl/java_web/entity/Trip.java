@@ -24,11 +24,12 @@ public class Trip {
     private String endLocation;
 
     private LocalDateTime startTime;
-    private int cost;
+    private int timeTravel;
+    private int price;
     private String status; //ended, waiting, cancelled
 
     private String coachType; //join từ coach
-    private String coachId;
+    private Long coachId;
     private int totalSeat;
 
     @ElementCollection

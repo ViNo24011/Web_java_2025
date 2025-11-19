@@ -127,7 +127,7 @@ public class TicketService {
         // Outbound (from trip + ticket)
         if (trip != null) {
             BookingResponse.Outbound outbound = new BookingResponse.Outbound();
-            outbound.setPrice((long) trip.getCost());
+            outbound.setPrice((long)trip.getPrice());
             outbound.setTripId(trip.getTripId());
             outbound.setStartTime(trip.getStartTime());
             outbound.setCoachType(trip.getCoachType());

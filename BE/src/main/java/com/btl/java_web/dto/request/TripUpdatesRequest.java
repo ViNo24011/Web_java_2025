@@ -2,20 +2,24 @@
 package com.btl.java_web.dto.request;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class TripUpdatesRequest{
-    int cost;
+    int price;
     String status;
     LocalDateTime startTime;
-    String coachId;
+    Long coachId;
     String coachType;
     int totalSeat;
+    List<String> orderedSeat;
 
 
-    public int getCost() {
-        return cost;
+    public int getPrice() {
+        return price;
     }
-
+    public List<String> getOrderedSeat(){
+        return orderedSeat; 
+    }
     public String getStatus() {
         return status;
     }
@@ -24,7 +28,7 @@ public class TripUpdatesRequest{
         return startTime;
     }
 
-    public String getCoachId() {
+    public Long getCoachId() {
         return coachId;
     }
 
