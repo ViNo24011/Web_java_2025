@@ -44,18 +44,38 @@ public class BookingController {
 
     /**
      * POST /bookings
-     * Create a new booking for the current user
+     * Cho phép cả User đã đăng nhập và Khách vãng lai đặt vé
      */
     @PostMapping("")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public ResponseEntity<?> createBooking(@RequestBody BookingRequest req) {
+        // 1. Thử lấy thông tin người dùng hiện tại (nếu có token)
         Account currentUser = getCurrentUser();
-        if (currentUser == null) {
-            return ResponseEntity.status(401).body("Unauthorized: User not found");
+
+        // 2. Validate cơ bản (Tên và SĐT là bắt buộc với bất kỳ ai)
+        if (req.getTripId() == null || req.getTripId().isBlank()) {
+            return ResponseEntity.badRequest().body("tripId is required");
+        }
+        if (req.getName() == null || req.getName().isBlank()) {
+            return ResponseEntity.badRequest().body("Họ tên hành khách là bắt buộc");
+        }
+        if (req.getPhone() == null || req.getPhone().isBlank()) {
+            return ResponseEntity.badRequest().body("Số điện thoại là bắt buộc");
         }
 
         Ticket t = new Ticket();
-        t.setAccountId(currentUser.getAccount_id()); // Use authenticated user's ID
+        // 3. Xử lý Account ID (QUAN TRỌNG)
+        if (currentUser != null) {
+            // Trường hợp 1: Đã đăng nhập -> Gán vé này cho tài khoản đó
+            t.setAccountId(currentUser.getAccount_id());
+        } else {
+            // Trường hợp 2: Khách vãng lai (Guest)
+            // Nếu request có gửi accountId (ví dụ frontend tự sinh ID tạm) thì dùng,
+            // nếu không thì để null hoặc gán chuỗi "GUEST" để dễ quản lý.
+            String guestId = (req.getAccountId() != null) ? req.getAccountId() : "GUEST";
+            t.setAccountId(guestId);
+        }
+        // 4. Các thông tin khác lấy từ Request gửi lên
         t.setTripId(req.getTripId());
         t.setCoachId(req.getCoachId());
         t.setName(req.getName());
@@ -66,7 +86,7 @@ public class BookingController {
         t.setStartLocation(req.getStartLocation());
         t.setEndLocation(req.getEndLocation());
         t.setOrderedSeat(req.getOrderedSeat());
-        t.setPaymentStatus("PAID");
+        t.setPaymentStatus("pending");
 
         Ticket saved = ticketService.create(t);
         BookingResponse response = ticketService.getBookingWithDetails(saved.getTicketId()).orElse(null);
