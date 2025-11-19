@@ -3,9 +3,13 @@ package com.btl.java_web.controller;
 
 import com.btl.java_web.dto.request.AccountCreationRequest;
 import com.btl.java_web.dto.request.AccountUpdateRequest;
+import com.btl.java_web.dto.request.DeleteSelectedRequest;
+import com.btl.java_web.dto.response.PaginationResponse;
+import com.btl.java_web.dto.response.VehicleResponse;
 import com.btl.java_web.entity.Account;
 import com.btl.java_web.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,28 +21,41 @@ public class AccountController {
     private AccountService accountService;
 
     @PostMapping
-    Account createAccount(@RequestBody AccountCreationRequest request){
-       return accountService.createAccount(request);
+    ResponseEntity<?> createAccount(@RequestBody AccountCreationRequest request){
+        if(!accountService.createAccount(request)) {
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.ok().body("Create account successfully");
     }
 
     @GetMapping
-    List<Account> getAccounts(){
-        return accountService.getAccounts();
+    ResponseEntity<?> getAccounts(@RequestParam(defaultValue = "1") int current, @RequestParam(defaultValue =
+            "5") int pageSize){
+        PaginationResponse<?> response = accountService.getAccounts(current, pageSize);
+        if(response == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok().body(response);
     }
 
     @GetMapping ("/{account_id}")
-    Account getAccount(@PathVariable String account_id){
-        return accountService.getAccount(account_id);
+    ResponseEntity<?> getAccount(@PathVariable String account_id){
+        Account response = accountService.getAccount(account_id);
+        return ResponseEntity.ok().body(response);
     }
 
-    @PutMapping ("/{account_id}")
-    Account updateAccount(@PathVariable String account_id, @RequestBody AccountUpdateRequest request){
-        return accountService.updateAccount(account_id, request);
+    @PatchMapping ("/{account_id}")
+    ResponseEntity<?> updateAccount(@PathVariable String account_id, @RequestBody AccountUpdateRequest request){
+        System.out.println("request account update" + request);
+        if(!accountService.updateAccount(account_id, request)){
+            return ResponseEntity.badRequest().build();
+        };
+        return ResponseEntity.ok("Update account successfully");
     }
 
-    @DeleteMapping ("/{account_id}")
-    String deleteAccount (@PathVariable String account_id){
-        accountService.deleteAccount(account_id);
-        return "User have been deleted";
+    @DeleteMapping ("/delete-selected")
+    ResponseEntity<?> deleteAccount (@RequestBody DeleteSelectedRequest request){
+        accountService.deleteAccount(request.getIds());
+        return ResponseEntity.ok("Delete account successfully");
     }
 }

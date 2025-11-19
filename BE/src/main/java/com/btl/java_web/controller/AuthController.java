@@ -31,13 +31,15 @@ public class AuthController {
     private AuthenticationManager authenticationManager;
 
     @PostMapping("/register")
-    public ResponseEntity<Account> registerUser(@RequestBody AccountCreationRequest request) {
+    public ResponseEntity<?> registerUser(@RequestBody AccountCreationRequest request) {
 
         // ⚠️ VÁ LỖ HỔNG BẢO MẬT: LUÔN SET ROLE LÀ USER KHI ĐĂNG KÝ
-        request.setRole("USER");
+        request.setRole("user");
 
-        Account newAccount = accountService.createAccount(request);
-        return ResponseEntity.ok(newAccount);
+        if(!accountService.createAccount(request)) {
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.ok().body("Create account successfully");
     }
 
     @PostMapping("/login")

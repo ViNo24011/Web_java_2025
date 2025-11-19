@@ -22,7 +22,7 @@ public class DataSeeder implements CommandLineRunner { // Implement CommandLineR
     public void run(String... args) throws Exception {
 
         // 1. Kiểm tra xem tài khoản "admin" đã tồn tại hay chưa
-        if (accountRepository.existsByUsername("admin")) {
+        if (accountRepository.existsByUsername("ADMIN")) {
             System.out.println("Admin account already exists. Skipping seeding.");
             return; // Nếu đã tồn tại, không làm gì cả
         }
