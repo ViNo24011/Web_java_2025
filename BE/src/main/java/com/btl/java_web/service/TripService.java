@@ -48,7 +48,17 @@ public class TripService {
     public List<Trip> searchTrips(String start, String end,String date) {
         LocalDateTime startTime=LocalDate.parse(date, DateTimeFormatter.ISO_LOCAL_DATE_TIME).atStartOfDay();
         LocalDateTime limit = startTime.toLocalDate().plusDays(1).atStartOfDay();
-        return tripRepository.findByStartLocationAndEndLocationAndStartTimeGreaterThanEqualAndStartTimeLessThan(start, end,(startTime.isAfter(LocalDateTime.now()))?startTime:LocalDateTime.now(),limit);
+        List<Trip> result= tripRepository.findByStartLocationAndEndLocationAndStartTimeGreaterThanEqualAndStartTimeLessThan(start, end,(startTime.isAfter(LocalDateTime.now()))?startTime:LocalDateTime.now(),limit);
+        for(Trip trip:result){
+            LocalDateTime timeStart=trip.getStartTime();
+            LocalDateTime timeEnd=trip.getEndTime();
+            if(timeEnd.isBefore(LocalDateTime.now())){
+                trip.setStatus("ended");
+            }else if(timeStart.isBefore(LocalDateTime.now())){
+                trip.setStatus("running");
+            } else trip.setStatus("waiting");
+        }
+        return result;
     }
     public Trip getTrip(String id) {
         return tripRepository.findById(id).orElse(null);
@@ -70,6 +80,7 @@ public class TripService {
         t.setPrice(updated.getPrice());
         t.setStatus(updated.getStatus());
         t.setStartTime(updated.getStartTime());
+        t.setEndTime(updated.getEndTime());
         t.setCoachId(updated.getCoachId());
         t.setCoachType(updated.getCoachType());
         t.setTotalSeat(updated.getTotalSeat());
