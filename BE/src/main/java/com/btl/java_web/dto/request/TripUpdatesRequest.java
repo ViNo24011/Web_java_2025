@@ -4,38 +4,19 @@ package com.btl.java_web.dto.request;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class TripUpdatesRequest{
     int price;
     String status;
     LocalDateTime startTime;
+    LocalDateTime endTime;
     Long coachId;
     String coachType;
     int totalSeat;
     List<String> orderedSeat;
-
-
-    public int getPrice() {
-        return price;
-    }
-    public List<String> getOrderedSeat(){
-        return orderedSeat; 
-    }
-    public String getStatus() {
-        return status;
-    }
-
-    public LocalDateTime getStartTime() {
-        return startTime;
-    }
-
-    public Long getCoachId() {
-        return coachId;
-    }
-
-    public String getCoachType() {
-        return coachType;
-    }
-    public int getTotalSeat(){
-        return totalSeat;
-    }
 }

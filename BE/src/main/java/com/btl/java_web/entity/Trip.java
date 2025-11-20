@@ -24,9 +24,9 @@ public class Trip {
     private String endLocation;
 
     private LocalDateTime startTime;
-    private int timeTravel;
+    private LocalDateTime endTime;
     private int price;
-    private String status; //ended, waiting, cancelled
+    private String status; //ended,waiting,running
 
     private String coachType; //join từ coach
     private Long coachId;

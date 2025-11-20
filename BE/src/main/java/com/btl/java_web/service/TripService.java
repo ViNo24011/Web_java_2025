@@ -13,15 +13,18 @@ import org.springframework.stereotype.Service;
 
 import com.btl.java_web.dto.request.TripUpdatesRequest;
 import com.btl.java_web.dto.response.PaginationResponse;
+import com.btl.java_web.entity.Ticket;
 import com.btl.java_web.entity.Trip;
 import com.btl.java_web.repository.TripRepository;
 
 @Service
 public class TripService {
     private final TripRepository tripRepository;
+    private final TicketService ticketService;
 
-    public TripService(TripRepository tripRepository) {
+    public TripService(TripRepository tripRepository,TicketService ticketService) {
         this.tripRepository = tripRepository;
+        this.ticketService=ticketService;
     }
 
     public PaginationResponse<Trip> getAll(int current, int pageSize) {
@@ -53,7 +56,7 @@ public class TripService {
 
     public String createTrip(Trip trip) {
         if (getTrip(trip.getTripId())==null){
-            List<Trip> searchCoach=tripRepository.findCoach(trip.getCoachId(),trip.getStartTime(),trip.getTimeTravel());
+            List<Trip> searchCoach=tripRepository.findCoach(trip.getCoachId(),trip.getStartTime(),trip.getEndTime());
             if(searchCoach!=null && searchCoach.isEmpty())
             {tripRepository.save(trip);
                 return "TRIP SAVED";
@@ -90,6 +93,13 @@ public class TripService {
                 System.err.println("Không có ID Trip hợp lệ nào để xóa.");
                 return false;
             }
+            for(String id :tripIds){
+                List<Ticket> bookings= ticketService.getBookingsByTrip(id);
+                for (Ticket booking : bookings){
+                    ticketService.cancelBooking(booking.getTicketId(), booking.getAccountId());
+                }
+            }
+            // xoa ticket truoc khi xoa trip
             tripRepository.deleteAllById(tripIds);
             return true;
         }catch (Exception ex) {
