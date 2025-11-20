@@ -2,12 +2,11 @@ package com.btl.java_web.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
-import java.util.List; // Nhớ import List
+import java.util.List;
 
 @Data
 public class BookingRequest {
-    // ... Các trường khác giữ nguyên ...
-
+    // --- THÔNG TIN KHÁCH HÀNG (Dùng chung) ---
     @JsonProperty("account_id")
     private String accountId;
     
@@ -17,35 +16,34 @@ public class BookingRequest {
     private String note;
     
     @JsonProperty("ticket_type")
-    private String ticketType;
+    private String ticketType; // "oneWay" hoặc "roundTrip"
 
     @JsonProperty("start_location")
     private String startLocation;
+    
     @JsonProperty("end_location")
     private String endLocation;
 
-    // --- CHIỀU ĐI ---
-    @JsonProperty("trip_id")
-    private String tripId;
-    
-    @JsonProperty("coach_id")
-    private String coachId;
-    
-    private Double price;
-    
-    @JsonProperty("ordered_seat")
-    private List<String> orderedSeat;
+    // --- OBJECT CHIỀU ĐI (Bắt buộc) ---
+    @JsonProperty("outbound")
+    private TripInput outbound;
 
-    // --- CHIỀU VỀ ---
-    @JsonProperty("return_trip_id")
-    private String returnTripId;
+    // --- OBJECT CHIỀU VỀ (Tùy chọn - có thể null) ---
+    @JsonProperty("returnTrip")
+    private TripInput returnTrip;
 
-    @JsonProperty("return_coach_id")
-    private String returnCoachId;
-    
-    @JsonProperty("return_price")
-    private Double returnPrice;
-
-    @JsonProperty("return_ordered_seat")
-    private List<String> returnOrderedSeat;
+    // --- CLASS CON ĐỂ HỨNG DỮ LIỆU TỪNG CHIỀU ---
+    @Data
+    public static class TripInput {
+        @JsonProperty("trip_id")
+        private String tripId;
+        
+        @JsonProperty("coach_id")
+        private String coachId;
+        
+        private Double price;
+        
+        @JsonProperty("ordered_seat")
+        private List<String> orderedSeat; // Nhận mảng ["A1", "A2"]
+    }
 }
