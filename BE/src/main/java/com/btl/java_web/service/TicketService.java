@@ -16,6 +16,7 @@ import com.btl.java_web.entity.Ticket;
 import com.btl.java_web.entity.Trip;
 import com.btl.java_web.repository.TicketRepository;
 import com.btl.java_web.repository.TripRepository;
+import java.util.Arrays;
 
 @Service
 public class TicketService {
@@ -106,11 +107,10 @@ public class TicketService {
     /**
      * Helper method: Convert Ticket to BookingResponse with Trip info
      */
-    private BookingResponse ticketToBookingResponse(Ticket ticket) {
+    public BookingResponse ticketToBookingResponse(Ticket ticket) {
         Trip trip = tripRepo.findById(ticket.getTripId()).orElse(null);
         BookingResponse response = new BookingResponse();
 
-        response.setTicketId(ticket.getTicketId());
         response.setAccountId(ticket.getAccountId());
         response.setName(ticket.getName());
         response.setPhone(ticket.getPhone());
@@ -124,37 +124,61 @@ public class TicketService {
         response.setStartLocation(ticket.getStartLocation());
         response.setEndLocation(ticket.getEndLocation());
 
-        // Outbound (from trip + ticket)
+        // 1. Xử lý OUTBOUND
+        BookingResponse.TripDetail outbound = new BookingResponse.TripDetail();
         if (trip != null) {
-            BookingResponse.Outbound outbound = new BookingResponse.Outbound();
-            outbound.setPrice((long)trip.getPrice());
             outbound.setTripId(trip.getTripId());
             outbound.setStartTime(trip.getStartTime());
             outbound.setCoachType(trip.getCoachType());
-            outbound.setCoachId(ticket.getCoachId());
-            // orderedSeat: ticket stores a single String; if comma-separated, split, else single element
-            if (ticket.getOrderedSeat() != null) {
-                String s = ticket.getOrderedSeat();
-                if (s.contains(",")) {
-                    outbound.setOrderedSeat(java.util.Arrays.stream(s.split(",")).map(String::trim).collect(java.util.stream.Collectors.toList()));
-                } else {
-                    outbound.setOrderedSeat(java.util.List.of(s));
-                }
-            }
-            response.setOutbound(outbound);
-            response.setTotalPrice(outbound.getPrice());
-        } else {
-            // no trip info; try to use ticket price
-            BookingResponse.Outbound outbound = new BookingResponse.Outbound();
             outbound.setPrice(ticket.getPrice() != null ? ticket.getPrice().longValue() : 0L);
-            outbound.setCoachId(ticket.getCoachId());
-            if (ticket.getOrderedSeat() != null) outbound.setOrderedSeat(java.util.List.of(ticket.getOrderedSeat()));
-            response.setOutbound(outbound);
-            response.setTotalPrice(outbound.getPrice());
+            // Coach ID xử lý cẩn thận
+            outbound.setCoachId(ticket.getCoachId() != null ? Long.parseLong(ticket.getCoachId()) : "");
+        } else {
+            outbound.setPrice(ticket.getPrice() != null ? ticket.getPrice().longValue() : 0L);
+        }
+            // orderedSeat: ticket stores a single String; if comma-separated, split, else single element
+        if (ticket.getOrderedSeat() != null && !ticket.getOrderedSeat().isEmpty()) {
+            String[] seats = ticket.getOrderedSeat().split(",");
+            outbound.setOrderedSeat(Arrays.stream(seats).map(String::trim).collect(Collectors.toList()));
+        }
+        response.setOutbound(outbound);
+        response.setTotalPrice(outbound.getPrice());
+
+        // 2. Xử lý RETURN TRIP
+        BookingResponse.TripDetail returnEmpty = new BookingResponse.TripDetail();
+        response.setReturnTrip(returnEmpty);
+
+        return response;
+    }
+
+    public BookingResponse addReturnTripToResponse(BookingResponse response, Ticket returnTicket) {
+        Trip trip = tripRepo.findById(returnTicket.getTripId()).orElse(null);
+        BookingResponse.TripDetail returnDetail = new BookingResponse.TripDetail();
+
+        if (trip != null) {
+            returnDetail.setTripId(trip.getTripId());
+            returnDetail.setStartTime(trip.getStartTime());
+            returnDetail.setCoachType(trip.getCoachType());
+            returnDetail.setPrice(returnTicket.getPrice() != null ? returnTicket.getPrice().longValue() : 0L);
+            
+            try {
+                returnDetail.setCoachId(Long.parseLong(returnTicket.getCoachId()));
+            } catch (NumberFormatException e) {
+                returnDetail.setCoachId(returnTicket.getCoachId());
+            }
         }
 
-        // returnTrip: not stored in current model. leave null so it's omitted in JSON when empty.
+        if (returnTicket.getOrderedSeat() != null && !returnTicket.getOrderedSeat().isEmpty()) {
+            String[] seats = returnTicket.getOrderedSeat().split(",");
+            returnDetail.setOrderedSeat(Arrays.stream(seats).map(String::trim).collect(Collectors.toList()));
+        }
 
+        // Gán vào response
+        response.setReturnTrip(returnDetail);
+        
+        // Cộng dồn tổng tiền
+        response.setTotalPrice(response.getTotalPrice() + returnDetail.getPrice());
+        
         return response;
     }
 
