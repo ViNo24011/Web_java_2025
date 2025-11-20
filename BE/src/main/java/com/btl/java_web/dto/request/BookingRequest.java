@@ -1,44 +1,51 @@
 package com.btl.java_web.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import java.util.List; // Nhớ import List
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class BookingRequest {
+    // ... Các trường khác giữ nguyên ...
+
     @JsonProperty("account_id")
     private String accountId;
     
+    private String name;
+    private String phone;
+    private String address;
+    private String note;
+    
+    @JsonProperty("ticket_type")
+    private String ticketType;
+
+    @JsonProperty("start_location")
+    private String startLocation;
+    @JsonProperty("end_location")
+    private String endLocation;
+
+    // --- CHIỀU ĐI ---
     @JsonProperty("trip_id")
     private String tripId;
     
     @JsonProperty("coach_id")
     private String coachId;
     
-    @JsonProperty("name")
-    private String name;
-    
-    @JsonProperty("phone")
-    private String phone;
-    
-    @JsonProperty("address")
-    private String address;
-    
-    @JsonProperty("price")
     private Double price;
     
-    @JsonProperty("ticket_type")
-    private String ticketType;
-    
-    @JsonProperty("start_location")
-    private String startLocation;
-    
-    @JsonProperty("end_location")
-    private String endLocation;
-    
     @JsonProperty("ordered_seat")
-    private String orderedSeat; // single seat identifier
+    private List<String> orderedSeat;
+
+    // --- CHIỀU VỀ ---
+    @JsonProperty("return_trip_id")
+    private String returnTripId;
+
+    @JsonProperty("return_coach_id")
+    private String returnCoachId;
+    
+    @JsonProperty("return_price")
+    private Double returnPrice;
+
+    @JsonProperty("return_ordered_seat")
+    private List<String> returnOrderedSeat;
 }
