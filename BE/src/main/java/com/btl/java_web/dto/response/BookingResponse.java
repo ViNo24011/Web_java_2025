@@ -36,13 +36,32 @@ public class BookingResponse {
     private String endLocation;
 
     // Nested Object: Chiều đi
-    private TripDetail outbound;
+    private Outbound outbound;
 
     // Nested Object: Chiều về (Luôn hiện, có thể rỗng)
-    private TripDetail returnTrip;
+    private ReturnTrip returnTrip;
 
     @Data
-    public static class TripDetail {
+    public static class Outbound {
+        @JsonProperty("trip_id")
+        private String tripId = "";
+
+        private long price = 0;
+
+        @JsonProperty("start_time")
+        private Object startTime = ""; // Dùng Object để trả về LocalDateTime hoặc ""
+
+        @JsonProperty("coach_type")
+        private String coachType = "";
+
+        @JsonProperty("coach_id")
+        private Object coachId = ""; // Dùng Object để trả về Long hoặc ""
+
+        @JsonProperty("ordered_seat")
+        private List<String> orderedSeat = new ArrayList<>();
+    }
+    @Data
+    public static class ReturnTrip {
         @JsonProperty("trip_id")
         private String tripId = "";
 
