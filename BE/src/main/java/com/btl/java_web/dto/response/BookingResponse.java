@@ -8,6 +8,9 @@ import java.util.List;
 
 @Data
 public class BookingResponse {
+    @JsonProperty("ticket_id")
+    private String ticketId;
+    
     @JsonProperty("account_id")
     private String accountId;
 
@@ -19,7 +22,7 @@ public class BookingResponse {
     private String ticketType;
 
     @JsonProperty("total_price")
-    private long totalPrice;
+    private Double totalPrice;
 
     @JsonProperty("payment_status")
     private String paymentStatus;
@@ -27,7 +30,7 @@ public class BookingResponse {
     @JsonProperty("created_time")
     private LocalDateTime createdTime;
 
-    private String note = ""; // Mặc định rỗng nếu null
+    private String note; // Để null nếu không có
 
     @JsonProperty("start_location")
     private String startLocation;
@@ -35,48 +38,50 @@ public class BookingResponse {
     @JsonProperty("end_location")
     private String endLocation;
 
-    // Nested Object: Chiều đi
+    // Nested Object: Chiều đi (required)
     private Outbound outbound;
 
-    // Nested Object: Chiều về (Luôn hiện, có thể rỗng)
+    // Nested Object: Chiều về (optional - có thể null)
+    @JsonProperty("returnTrip")
     private ReturnTrip returnTrip;
 
     @Data
     public static class Outbound {
         @JsonProperty("trip_id")
-        private String tripId = "";
+        private String tripId;
 
-        private long price = 0;
+        private Double price;
 
         @JsonProperty("start_time")
-        private Object startTime = ""; // Dùng Object để trả về LocalDateTime hoặc ""
+        private LocalDateTime startTime;
 
         @JsonProperty("coach_type")
-        private String coachType = "";
+        private String coachType;
 
         @JsonProperty("coach_id")
-        private Object coachId = ""; // Dùng Object để trả về Long hoặc ""
+        private Integer coachId;
 
         @JsonProperty("ordered_seat")
-        private List<String> orderedSeat = new ArrayList<>();
+        private List<String> orderedSeat;
     }
+    
     @Data
     public static class ReturnTrip {
         @JsonProperty("trip_id")
-        private String tripId = "";
+        private String tripId;
 
-        private long price = 0;
+        private Double price;
 
         @JsonProperty("start_time")
-        private Object startTime = ""; // Dùng Object để trả về LocalDateTime hoặc ""
+        private LocalDateTime startTime;
 
         @JsonProperty("coach_type")
-        private String coachType = "";
+        private String coachType;
 
         @JsonProperty("coach_id")
-        private Object coachId = ""; // Dùng Object để trả về Long hoặc ""
+        private Integer coachId;
 
         @JsonProperty("ordered_seat")
-        private List<String> orderedSeat = new ArrayList<>();
+        private List<String> orderedSeat;
     }
 }

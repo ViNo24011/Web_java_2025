@@ -45,5 +45,11 @@ public class BookingRequest {
         
         @JsonProperty("ordered_seat")
         private List<String> orderedSeat; // Nhận mảng ["A1", "A2"]
+
+        @JsonProperty("start_time")
+        private String startTime;
+
+        @JsonProperty("coach_type")
+        private String coachType;
     }
 }

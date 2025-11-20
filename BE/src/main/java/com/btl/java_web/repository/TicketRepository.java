@@ -11,7 +11,8 @@ import java.util.Optional;
 public interface TicketRepository extends JpaRepository<Ticket, String> {
 	List<Ticket> findByAccountIdOrderByCreatedTimeDesc(String accountId);
 
-	List<Ticket> findByTripId(String tripId);
+	// ✅ XÓA: findByTripId() vì Ticket không còn tripId
+	// Giờ query qua BookingDetailRepository.findByTripId() thay thế
 
 	Optional<Ticket> findByTicketIdAndAccountId(String ticketId, String accountId);
 }
