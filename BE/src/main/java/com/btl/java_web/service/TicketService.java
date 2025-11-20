@@ -11,6 +11,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.btl.java_web.dto.response.BookingResponse;
+import com.btl.java_web.dto.response.BookingResponse.Outbound;
+import com.btl.java_web.dto.response.BookingResponse.ReturnTrip;
 import com.btl.java_web.dto.response.PaginationResponse;
 import com.btl.java_web.entity.Ticket;
 import com.btl.java_web.entity.Trip;
@@ -125,59 +127,58 @@ public class TicketService {
         response.setEndLocation(ticket.getEndLocation());
 
         // 1. Xử lý OUTBOUND
-        BookingResponse.TripDetail outbound = new BookingResponse.TripDetail();
+        Outbound outbound = new Outbound();
         if (trip != null) {
             outbound.setTripId(trip.getTripId());
             outbound.setStartTime(trip.getStartTime());
             outbound.setCoachType(trip.getCoachType());
             outbound.setPrice(ticket.getPrice() != null ? ticket.getPrice().longValue() : 0L);
-            // Coach ID xử lý cẩn thận
-            outbound.setCoachId(ticket.getCoachId() != null ? Long.parseLong(ticket.getCoachId()) : "");
+            try {
+                outbound.setCoachId(Long.parseLong(ticket.getCoachId()));
+            } catch (Exception e) { outbound.setCoachId(""); }
         } else {
             outbound.setPrice(ticket.getPrice() != null ? ticket.getPrice().longValue() : 0L);
+            outbound.setTripId(ticket.getTripId());
         }
-            // orderedSeat: ticket stores a single String; if comma-separated, split, else single element
+
+        // Xử lý ghế: String "A1,A2" -> List ["A1", "A2"]
         if (ticket.getOrderedSeat() != null && !ticket.getOrderedSeat().isEmpty()) {
-            String[] seats = ticket.getOrderedSeat().split(",");
-            outbound.setOrderedSeat(Arrays.stream(seats).map(String::trim).collect(Collectors.toList()));
+            outbound.setOrderedSeat(Arrays.stream(ticket.getOrderedSeat().split(","))
+                    .map(String::trim).collect(Collectors.toList()));
         }
         response.setOutbound(outbound);
         response.setTotalPrice(outbound.getPrice());
 
         // 2. Xử lý RETURN TRIP
-        BookingResponse.TripDetail returnEmpty = new BookingResponse.TripDetail();
-        response.setReturnTrip(returnEmpty);
+        ReturnTrip returnTrip = new ReturnTrip();
+        response.setReturnTrip(returnTrip);
 
         return response;
     }
 
     public BookingResponse addReturnTripToResponse(BookingResponse response, Ticket returnTicket) {
         Trip trip = tripRepo.findById(returnTicket.getTripId()).orElse(null);
-        BookingResponse.TripDetail returnDetail = new BookingResponse.TripDetail();
+        ReturnTrip returnTrip = new ReturnTrip();
 
         if (trip != null) {
-            returnDetail.setTripId(trip.getTripId());
-            returnDetail.setStartTime(trip.getStartTime());
-            returnDetail.setCoachType(trip.getCoachType());
-            returnDetail.setPrice(returnTicket.getPrice() != null ? returnTicket.getPrice().longValue() : 0L);
-            
+            returnTrip.setTripId(trip.getTripId());
+            returnTrip.setStartTime(trip.getStartTime());
+            returnTrip.setCoachType(trip.getCoachType());
+            returnTrip.setPrice(returnTicket.getPrice() != null ? returnTicket.getPrice().longValue() : 0L);
             try {
-                returnDetail.setCoachId(Long.parseLong(returnTicket.getCoachId()));
-            } catch (NumberFormatException e) {
-                returnDetail.setCoachId(returnTicket.getCoachId());
-            }
+                returnTrip.setCoachId(Long.parseLong(returnTicket.getCoachId()));
+            } catch (Exception e) { returnTrip.setCoachId(""); }
         }
 
+        // Xử lý ghế chiều về
         if (returnTicket.getOrderedSeat() != null && !returnTicket.getOrderedSeat().isEmpty()) {
-            String[] seats = returnTicket.getOrderedSeat().split(",");
-            returnDetail.setOrderedSeat(Arrays.stream(seats).map(String::trim).collect(Collectors.toList()));
+            returnTrip.setOrderedSeat(Arrays.stream(returnTicket.getOrderedSeat().split(","))
+                    .map(String::trim).collect(Collectors.toList()));
         }
 
-        // Gán vào response
-        response.setReturnTrip(returnDetail);
-        
+        response.setReturnTrip(returnTrip);
         // Cộng dồn tổng tiền
-        response.setTotalPrice(response.getTotalPrice() + returnDetail.getPrice());
+        response.setTotalPrice(response.getTotalPrice() + returnTrip.getPrice());
         
         return response;
     }
