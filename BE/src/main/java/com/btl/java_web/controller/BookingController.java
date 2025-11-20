@@ -47,80 +47,86 @@ public class BookingController {
      * Cho phép cả User đã đăng nhập và Khách vãng lai đặt vé
      */
     @PostMapping("")
-    public ResponseEntity<?> createBooking(@RequestBody BookingRequest req) {
-        // Thử lấy thông tin người dùng hiện tại (nếu có token)
-        Account currentUser = getCurrentUser();
+public ResponseEntity<?> createBooking(@RequestBody BookingRequest req) {
+    Account currentUser = getCurrentUser();
 
-        // 1. Validate cơ bản
-        if (req.getTripId() == null || req.getTripId().isBlank()) {
-            return ResponseEntity.badRequest().body("tripId is required");
-        }
-
-        // 2. Xác định Account ID
-        String accountId = (currentUser != null) ? currentUser.getAccount_id() : 
-                           ((req.getAccountId() != null) ? req.getAccountId() : "GUEST");
-
-        // 3. TẠO VÉ CHIỀU ĐI (Outbound Ticket)
-        Ticket t1 = new Ticket();
-        t1.setAccountId(accountId);
-        t1.setTripId(req.getTripId());
-        t1.setCoachId(req.getCoachId());
-        t1.setName(req.getName());
-        t1.setPhone(req.getPhone());
-        t1.setAddress(req.getAddress());
-        t1.setPrice(req.getPrice());
-        t1.setTicketType(req.getTicketType()); // "oneWay" hoặc "roundTrip"
-        t1.setStartLocation(req.getStartLocation());
-        t1.setEndLocation(req.getEndLocation());
-        if (req.getOrderedSeat() != null && !req.getOrderedSeat().isEmpty()) {
-            // Chuyển ["A1", "A2"] thành "A1,A2" để lưu xuống DB
-            String seatString = String.join(",", req.getOrderedSeat());
-            t1.setOrderedSeat(seatString);
-        } else {
-            t1.setOrderedSeat("");
-        }
-        t1.setPaymentStatus("pending");
-
-        Ticket savedOutbound = ticketService.create(t1);
-        
-        // Tạo response ban đầu từ vé đi
-        BookingResponse response = ticketService.ticketToBookingResponse(savedOutbound);
-
-        // 4. TẠO VÉ CHIỀU VỀ (Return Ticket) - Nếu có
-        if (req.getReturnTripId() != null && !req.getReturnTripId().isBlank()) {
-            Ticket t2 = new Ticket();
-            t2.setAccountId(accountId);
-            t2.setTripId(req.getReturnTripId());
-            t2.setCoachId(req.getReturnCoachId());
-            
-            // Thông tin cá nhân giống chiều đi
-            t2.setName(req.getName());
-            t2.setPhone(req.getPhone());
-            t2.setAddress(req.getAddress());
-            
-            t2.setPrice(req.getReturnPrice());
-            t2.setTicketType(req.getTicketType());
-            
-            // Đảo ngược địa điểm cho đúng logic lưu db (hoặc client gửi đúng thì gán thẳng)
-            t2.setStartLocation(req.getEndLocation());
-            t2.setEndLocation(req.getStartLocation());
-            
-            // ⚠️ XỬ LÝ LIST -> STRING CHO CHIỀU VỀ
-            if (req.getReturnOrderedSeat() != null && !req.getReturnOrderedSeat().isEmpty()) {
-                String returnSeatString = String.join(",", req.getReturnOrderedSeat());
-                t2.setOrderedSeat(returnSeatString);
-            } else {
-                t2.setOrderedSeat("");
-            }
-            t2.setPaymentStatus("pending");
-
-            Ticket savedReturn = ticketService.create(t2);
-
-            // Gộp thông tin vé về vào response
-            response = ticketService.addReturnTripToResponse(response, savedReturn);
-        }
-        return ResponseEntity.ok(response);
+    // 1. Validate Outbound (Chiều đi bắt buộc phải có)
+    if (req.getOutbound() == null || req.getOutbound().getTripId() == null) {
+        return ResponseEntity.badRequest().body("Thông tin chuyến đi (Outbound) là bắt buộc");
     }
+
+    // 2. Xác định Account ID
+    String accountId = (currentUser != null) ? currentUser.getAccount_id() : 
+                       ((req.getAccountId() != null) ? req.getAccountId() : "GUEST");
+
+    // ==========================================
+    // 3. TẠO VÉ CHIỀU ĐI (Lấy từ req.getOutbound())
+    // ==========================================
+    Ticket t1 = new Ticket();
+    t1.setAccountId(accountId);
+    t1.setName(req.getName());
+    t1.setPhone(req.getPhone());
+    t1.setAddress(req.getAddress());
+    t1.setTicketType(req.getTicketType());
+    t1.setStartLocation(req.getStartLocation());
+    t1.setEndLocation(req.getEndLocation());
+    t1.setPaymentStatus("pending");
+
+    // Lấy dữ liệu từ object outbound
+    BookingRequest.TripInput out = req.getOutbound();
+    t1.setTripId(out.getTripId());
+    t1.setCoachId(out.getCoachId());
+    t1.setPrice(out.getPrice());
+    
+    // List -> String
+    if (out.getOrderedSeat() != null && !out.getOrderedSeat().isEmpty()) {
+        t1.setOrderedSeat(String.join(",", out.getOrderedSeat()));
+    } else {
+        t1.setOrderedSeat("");
+    }
+
+    Ticket savedOutbound = ticketService.create(t1);
+    
+    // Tạo response ban đầu
+    BookingResponse response = ticketService.ticketToBookingResponse(savedOutbound);
+
+    // ==========================================
+    // 4. TẠO VÉ CHIỀU VỀ (Lấy từ req.getReturnTrip())
+    // ==========================================
+    if (req.getReturnTrip() != null && req.getReturnTrip().getTripId() != null) {
+        Ticket t2 = new Ticket();
+        t2.setAccountId(accountId);
+        t2.setName(req.getName());
+        t2.setPhone(req.getPhone());
+        t2.setAddress(req.getAddress());
+        t2.setTicketType(req.getTicketType());
+        t2.setPaymentStatus("pending");
+        
+        // Đảo ngược địa điểm
+        t2.setStartLocation(req.getEndLocation());
+        t2.setEndLocation(req.getStartLocation());
+
+        // Lấy dữ liệu từ object returnTrip
+        BookingRequest.TripInput ret = req.getReturnTrip();
+        t2.setTripId(ret.getTripId());
+        t2.setCoachId(ret.getCoachId());
+        t2.setPrice(ret.getPrice());
+
+        // List -> String
+        if (ret.getOrderedSeat() != null && !ret.getOrderedSeat().isEmpty()) {
+            t2.setOrderedSeat(String.join(",", ret.getOrderedSeat()));
+        } else {
+            t2.setOrderedSeat("");
+        }
+
+        Ticket savedReturn = ticketService.create(t2);
+        
+        // Gộp vào response
+        response = ticketService.addReturnTripToResponse(response, savedReturn);
+    }
+
+    return ResponseEntity.ok(response);
+}
 
     /**
      * GET /bookings/my-history
