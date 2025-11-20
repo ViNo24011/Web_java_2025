@@ -3,9 +3,11 @@ package com.btl.java_web.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -16,7 +18,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.http.HttpMethod;
 import com.btl.java_web.repository.AccountRepository;
 
 @Configuration
@@ -73,6 +74,9 @@ public class SecurityConfig {
                 // Tắt CSRF
                 .csrf(csrf -> csrf.disable())
 
+                // ✅ QUAN TRỌNG: Cấu hình CORS trong Spring Security
+                .cors(Customizer.withDefaults())
+
                 // Cấu hình các quy tắc phân quyền (Authorization Rules)
                 .authorizeHttpRequests(authz -> authz
 
@@ -99,7 +103,7 @@ public class SecurityConfig {
                         .requestMatchers("/bookings/**").hasAnyRole("USER", "ADMIN")
                         
                         .requestMatchers("/profile/**").hasAnyRole("USER", "ADMIN")
-                        .requestMatchers("/trips").hasAnyRole("USER","ADMIN")
+                        .requestMatchers("/trips/**").permitAll()
 
                         // TẤT CẢ các request còn lại đều phải được xác thực
                         .anyRequest().authenticated()
@@ -111,8 +115,8 @@ public class SecurityConfig {
                 // Bổ sung AuthenticationProvider
                 .authenticationProvider(authenticationProvider())
 
-
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class).addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+                // ✅ SỬA LỖI: Chỉ thêm filter JWT MỘT LẦN (không duplicate)
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

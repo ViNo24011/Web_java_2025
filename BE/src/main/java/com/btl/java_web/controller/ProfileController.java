@@ -35,7 +35,6 @@ public class ProfileController {
         Account myAccount = accountService.getAccountByUsername(myUsername)
                 .orElseThrow(() -> new RuntimeException("Error: My profile not found"));
 
-        // ⚠️ BẢO MẬT: Không bao giờ trả về mật khẩu trong API response
         myAccount.setPassword(null);
 
         return ResponseEntity.ok(myAccount);
@@ -62,7 +61,7 @@ public class ProfileController {
      * Method: PUT
      * URL: /profile/me
      */
-    @PutMapping("/me")
+    @PatchMapping("/me")
     public ResponseEntity<Account> updateMyProfile(@RequestBody ProfileUpdateRequest request) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String myUsername = authentication.getName();

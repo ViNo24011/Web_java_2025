@@ -1,16 +1,9 @@
 package com.btl.java_web.controller;
 
+import com.btl.java_web.dto.request.TripRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.btl.java_web.dto.request.DeleteSelectedRequest;
 import com.btl.java_web.dto.request.TripUpdatesRequest;
@@ -20,7 +13,7 @@ import com.btl.java_web.service.TripService;
 
 @RestController
 @RequestMapping("admin/trips")
-@PreAuthorize("hasRole('ADMIN')") // Tất cả endpoints yêu cầu ADMIN
+//@PreAuthorize("hasRole('ADMIN')") // Tất cả endpoints yêu cầu ADMIN
 public class TripAdminController {
     private final TripService tripService;
 
@@ -39,11 +32,19 @@ public class TripAdminController {
     }
 
     @PostMapping("/create")
-    public String create(@RequestBody Trip trip) {
-        return tripService.createTrip(trip);
+    public ResponseEntity<?> create(@RequestBody Trip trip) {
+        try {
+            if(tripService.createTrip(trip)) {
+                return ResponseEntity.ok().body("Tạo chuyến thành công!");
+            }
+            return ResponseEntity.badRequest().body("Lỗi khi tạo chuyến. Vui lòng kiểm tra dữ liệu và thử lại.");
+        } catch (Exception e) {
+            // Trả về error message chi tiết để frontend biết lỗi gì
+            return ResponseEntity.badRequest().body("Lỗi: " + e.getMessage());
+        }
     }
 
-    @PutMapping("/edit/{id}")
+    @PatchMapping("/edit/{id}")
     public Trip update(@PathVariable String id, @RequestBody TripUpdatesRequest trip) {
         return tripService.updateTrip(id, trip);
     }

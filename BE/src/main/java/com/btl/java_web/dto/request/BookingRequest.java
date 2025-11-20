@@ -1,48 +1,44 @@
 package com.btl.java_web.dto.request;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class BookingRequest {
+    @JsonProperty("account_id")
     private String accountId;
+    
+    @JsonProperty("trip_id")
     private String tripId;
+    
+    @JsonProperty("coach_id")
     private String coachId;
+    
+    @JsonProperty("name")
     private String name;
+    
+    @JsonProperty("phone")
     private String phone;
+    
+    @JsonProperty("address")
     private String address;
+    
+    @JsonProperty("price")
     private Double price;
+    
+    @JsonProperty("ticket_type")
     private String ticketType;
+    
+    @JsonProperty("start_location")
     private String startLocation;
+    
+    @JsonProperty("end_location")
     private String endLocation;
+    
+    @JsonProperty("ordered_seat")
     private String orderedSeat; // single seat identifier
-
-    public String getAccountId() { return accountId; }
-    public void setAccountId(String accountId) { this.accountId = accountId; }
-
-    public String getTripId() { return tripId; }
-    public void setTripId(String tripId) { this.tripId = tripId; }
-
-    public String getCoachId() { return coachId; }
-    public void setCoachId(String coachId) { this.coachId = coachId; }
-
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
-
-    public String getPhone() { return phone; }
-    public void setPhone(String phone) { this.phone = phone; }
-
-    public String getAddress() { return address; }
-    public void setAddress(String address) { this.address = address; }
-
-    public Double getPrice() { return price; }
-    public void setPrice(Double price) { this.price = price; }
-
-    public String getTicketType() { return ticketType; }
-    public void setTicketType(String ticketType) { this.ticketType = ticketType; }
-
-    public String getStartLocation() { return startLocation; }
-    public void setStartLocation(String startLocation) { this.startLocation = startLocation; }
-
-    public String getEndLocation() { return endLocation; }
-    public void setEndLocation(String endLocation) { this.endLocation = endLocation; }
-
-    public String getOrderedSeat() { return orderedSeat; }
-    public void setOrderedSeat(String orderedSeat) { this.orderedSeat = orderedSeat; }
 }

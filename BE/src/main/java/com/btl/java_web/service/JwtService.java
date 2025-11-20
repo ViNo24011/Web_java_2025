@@ -23,7 +23,7 @@ public class JwtService {
     public static final String SECRET_KEY = "YisQeraLv2n4H6LNYbF1YIisQeraLv2n4H6LNYbF1YIisQeraLv2n4H6LNYbF1YI";
 
     // Thời gian hết hạn của Access Token (ví dụ: 1 giờ)
-    private static final long ACCESS_TOKEN_EXPIRATION = 1000 * 60 * 60;
+    private static final long ACCESS_TOKEN_EXPIRATION = 1000 * 60 * 60 * 2;
 
     // Thời gian hết hạn của Refresh Token (ví dụ: 7 ngày)
     private static final long REFRESH_TOKEN_EXPIRATION = 1000 * 60 * 60 * 24 * 7;

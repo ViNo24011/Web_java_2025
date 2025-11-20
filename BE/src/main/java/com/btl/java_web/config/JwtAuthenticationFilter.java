@@ -83,6 +83,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter { // Đảm b�
             // Nếu có lỗi khi giải mã token (ví dụ: hết hạn, sai chữ ký)
             // Chúng ta không làm gì cả, chỉ để request đi tiếp
             // Và vì không setAuthentication, Spring Security sẽ tự coi là "chưa xác thực" (lỗi 401/403)
+            System.err.println("JWT Authentication Error: " + e.getMessage());
         }
 
         // 11. Cho request đi tiếp đến Filter tiếp theo hoặc Controller

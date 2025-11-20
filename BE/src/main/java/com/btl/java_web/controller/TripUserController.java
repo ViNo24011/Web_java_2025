@@ -1,6 +1,8 @@
 package com.btl.java_web.controller;
 import java.util.List;
+import java.util.Map;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,11 +24,9 @@ public class TripUserController {
     }
 
     @GetMapping("/search")
-    public List<Trip> search(@RequestParam String from, @RequestParam String to,@RequestParam String date) {
-        return tripService.searchTrips(from, to,date);
-    }
-    public TripResponse search(@RequestParam String from, @RequestParam String to,@RequestParam String startDate,@RequestParam String endDate){
-        return new TripResponse(tripService.searchTrips(from,to,startDate),tripService.searchTrips(from,to,endDate));
+    public ResponseEntity<?> search(@RequestParam String start_location, @RequestParam String end_location, @RequestParam String start_date, @RequestParam(required = false) String end_date) {
+        Map<String, List<Trip>> response = tripService.searchTrips(start_location, end_location,start_date, end_date);
+        return ResponseEntity.ok().body(response);
     }
 
     @GetMapping("/{id}")

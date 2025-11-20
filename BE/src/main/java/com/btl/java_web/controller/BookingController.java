@@ -47,7 +47,6 @@ public class BookingController {
      * Cho phép cả User đã đăng nhập và Khách vãng lai đặt vé
      */
     @PostMapping("")
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public ResponseEntity<?> createBooking(@RequestBody BookingRequest req) {
         // 1. Thử lấy thông tin người dùng hiện tại (nếu có token)
         Account currentUser = getCurrentUser();
