@@ -205,13 +205,39 @@ public class TripService {
 
     public Trip updateTrip(String id, TripUpdatesRequest updated) {
         Trip t = tripRepository.findById(id).orElseThrow();
-        t.setPrice(updated.getPrice());
-        t.setStatus(updated.getStatus());
-        t.setStartTime(updated.getStartTime());
-        t.setEndTime(updated.getEndTime());
-        t.setCoachId(updated.getCoachId());
-        t.setCoachType(updated.getCoachType());
-        t.setTotalSeat(updated.getTotalSeat());
+        
+        // ✅ Update tất cả các fields từ request (nếu không null)
+        if (updated.getStartLocation() != null) {
+            t.setStartLocation(updated.getStartLocation());
+        }
+        if (updated.getEndLocation() != null) {
+            t.setEndLocation(updated.getEndLocation());
+        }
+        if (updated.getStartTime() != null) {
+            t.setStartTime(updated.getStartTime());
+        }
+        if (updated.getEndTime() != null) {
+            t.setEndTime(updated.getEndTime());
+        }
+        if (updated.getPrice() != null) {
+            t.setPrice(updated.getPrice());
+        }
+        if (updated.getStatus() != null) {
+            t.setStatus(updated.getStatus());
+        }
+        if (updated.getCoachType() != null) {
+            t.setCoachType(updated.getCoachType());
+        }
+        if (updated.getCoachId() != null) {
+            t.setCoachId(updated.getCoachId());
+        }
+        if (updated.getTotalSeat() != null) {
+            t.setTotalSeat(updated.getTotalSeat());
+        }
+        if (updated.getOrderedSeat() != null) {
+            t.setOrderedSeat(updated.getOrderedSeat());
+        }
+        
         return tripRepository.save(t);
     }
 

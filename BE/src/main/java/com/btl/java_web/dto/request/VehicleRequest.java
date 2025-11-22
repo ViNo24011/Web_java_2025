@@ -19,4 +19,5 @@ public class VehicleRequest {
     private int totalSeat;
 
     private String status;
+    
 }
