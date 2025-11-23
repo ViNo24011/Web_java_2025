@@ -34,7 +34,7 @@ public class AuthController {
     public ResponseEntity<?> registerUser(@RequestBody AccountCreationRequest request) {
 
         // ⚠️ VÁ LỖ HỔNG BẢO MẬT: LUÔN SET ROLE LÀ USER KHI ĐĂNG KÝ
-        request.setRole("user");
+        request.setRole("CUSTOMER");
 
         if(!accountService.createAccount(request)) {
             return ResponseEntity.badRequest().build();

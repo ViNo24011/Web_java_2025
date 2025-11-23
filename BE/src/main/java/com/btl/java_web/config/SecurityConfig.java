@@ -100,9 +100,9 @@ public class SecurityConfig {
                         // Cho phép ai cũng được gọi POST /bookings (Đặt vé)
                         .requestMatchers(HttpMethod.POST, "/bookings").permitAll()
                         // Booking APIs - USER và ADMIN có thể xem lịch sử, hủy vé
-                        .requestMatchers("/bookings/**").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers("/bookings/**").hasAnyRole("CUSTOMER", "ADMIN")
                         
-                        .requestMatchers("/profile/**").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers("/profile/**").hasAnyRole("CUSTOMER", "ADMIN")
                         .requestMatchers("/trips/**").permitAll()
 
                         // TẤT CẢ các request còn lại đều phải được xác thực
